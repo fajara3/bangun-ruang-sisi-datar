@@ -1,0 +1,1922 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Petualangan Bangun Ruang - E-Modul RME Kelas V</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts: Quicksand for a friendly, modern, and readable look -->
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&family=Fredoka+One&display=swap"
+        rel="stylesheet">
+
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Three.js for 3D Models -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Quicksand', 'sans-serif'],
+                        display: ['Fredoka One', 'cursive'],
+                    },
+                    colors: {
+                        'fun-blue': '#45B7D1',
+                        'fun-orange': '#FF8A65',
+                        'fun-yellow': '#FFD166',
+                        'fun-green': '#06D6A0',
+                        'fun-pink': '#EF476F',
+                        'fun-purple': '#9D4EDD'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #f7f9fc;
+            background-image: radial-gradient(#e2e8f0 2px, transparent 2px);
+            background-size: 30px 30px;
+        }
+
+        .section-hidden {
+            display: none;
+        }
+
+        .tab-active {
+            background-color: #FF8A65;
+            /* fun-orange */
+            color: white;
+            border-color: #FF8A65;
+        }
+
+        .tab-inactive {
+            background-color: white;
+            color: #4b5563;
+            border-color: #e5e7eb;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Fun animations */
+        @keyframes bounce-slight {
+
+            0%,
+            100% {
+                transform: translateY(-2%);
+            }
+
+            50% {
+                transform: translateY(2%);
+            }
+        }
+
+        .animate-bounce-slight {
+            animation: bounce-slight 3s infinite ease-in-out;
+        }
+
+        .canvas-container {
+            width: 100%;
+            height: 250px;
+            background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+            border-radius: 1rem;
+            overflow: hidden;
+            cursor: grab;
+        }
+
+        .canvas-container:active {
+            cursor: grabbing;
+        }
+
+        /* Net Canvas Container */
+        .net-canvas-container {
+            width: 100%;
+            height: 280px;
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-radius: 1rem;
+            overflow: hidden;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #45B7D1;
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #06D6A0;
+        }
+    </style>
+</head>
+
+<body class="text-gray-800 antialiased min-h-screen flex flex-col">
+
+    <nav class="bg-white shadow-md sticky top-0 z-50 border-b-4 border-fun-yellow">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <i class="fa-solid fa-cube text-fun-pink text-3xl mr-3 animate-bounce-slight"></i>
+                    <span class="font-display text-2xl text-fun-blue tracking-wider">Ruang<span
+                            class="text-fun-orange">Seru</span></span>
+                </div>
+
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex items-center space-x-1 overflow-x-auto">
+                    <button onclick="nav('beranda')"
+                        class="nav-btn px-3 py-2 rounded-md text-sm font-bold text-gray-600 hover:text-fun-blue hover:bg-blue-50 transition"><i
+                            class="fa-solid fa-home mr-1"></i> Beranda</button>
+                    <button onclick="nav('petunjuk')"
+                        class="nav-btn px-3 py-2 rounded-md text-sm font-bold text-gray-600 hover:text-fun-blue hover:bg-blue-50 transition"><i
+                            class="fa-solid fa-info-circle mr-1"></i> Petunjuk</button>
+                    <button onclick="nav('tujuan')"
+                        class="nav-btn px-3 py-2 rounded-md text-sm font-bold text-gray-600 hover:text-fun-blue hover:bg-blue-50 transition"><i
+                            class="fa-solid fa-bullseye mr-1"></i> Tujuan</button>
+                    <button onclick="nav('materi')"
+                        class="nav-btn px-3 py-2 rounded-md text-sm font-bold text-white bg-fun-green shadow-sm hover:bg-green-500 transition"><i
+                            class="fa-solid fa-book-open mr-1"></i> Materi</button>
+                    <button onclick="nav('jaring')"
+                        class="nav-btn px-3 py-2 rounded-md text-sm font-bold text-gray-600 hover:text-fun-yellow hover:bg-yellow-50 transition"><i
+                            class="fa-solid fa-shapes mr-1"></i> Jaring-Jaring</button>
+                    <button onclick="nav('aktivitas')"
+                        class="nav-btn px-3 py-2 rounded-md text-sm font-bold text-gray-600 hover:text-fun-orange hover:bg-orange-50 transition"><i
+                            class="fa-solid fa-pencil-ruler mr-1"></i> Aktivitas</button>
+                    <button onclick="nav('lkpd')"
+                        class="nav-btn px-3 py-2 rounded-md text-sm font-bold text-gray-600 hover:text-teal-600 hover:bg-teal-50 transition"><i
+                            class="fa-solid fa-file-lines mr-1"></i> LKPD</button>
+                    <button onclick="nav('latihan')"
+                        class="nav-btn px-3 py-2 rounded-md text-sm font-bold text-gray-600 hover:text-fun-purple hover:bg-purple-50 transition"><i
+                            class="fa-solid fa-dumbbell mr-1"></i> Latihan</button>
+                    <button onclick="nav('evaluasi')"
+                        class="nav-btn px-3 py-2 rounded-md text-sm font-bold text-gray-600 hover:text-fun-pink hover:bg-pink-50 transition"><i
+                            class="fa-solid fa-star mr-1"></i> Evaluasi</button>
+                    <button onclick="nav('glosarium')"
+                        class="nav-btn px-3 py-2 rounded-md text-sm font-bold text-gray-600 hover:text-fun-blue hover:bg-blue-50 transition"><i
+                            class="fa-solid fa-book mr-1"></i> Glosarium</button>
+                </div>
+
+                <!-- Mobile menu button -->
+                <div class="flex items-center md:hidden">
+                    <button onclick="toggleMobileMenu()" class="text-gray-600 hover:text-fun-blue focus:outline-none">
+                        <i class="fa-solid fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Panel -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 shadow-inner">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 flex flex-col">
+                <button onclick="nav('beranda'); toggleMobileMenu()"
+                    class="text-left px-3 py-2 rounded-md text-base font-bold text-gray-600 hover:text-fun-blue hover:bg-blue-50"><i
+                        class="fa-solid fa-home w-6"></i> Beranda</button>
+                <button onclick="nav('petunjuk'); toggleMobileMenu()"
+                    class="text-left px-3 py-2 rounded-md text-base font-bold text-gray-600 hover:text-fun-blue hover:bg-blue-50"><i
+                        class="fa-solid fa-info-circle w-6"></i> Petunjuk</button>
+                <button onclick="nav('tujuan'); toggleMobileMenu()"
+                    class="text-left px-3 py-2 rounded-md text-base font-bold text-gray-600 hover:text-fun-blue hover:bg-blue-50"><i
+                        class="fa-solid fa-bullseye w-6"></i> Tujuan</button>
+                <button onclick="nav('materi'); toggleMobileMenu()"
+                    class="text-left px-3 py-2 rounded-md text-base font-bold text-fun-green hover:bg-green-50"><i
+                        class="fa-solid fa-book-open w-6"></i> Materi</button>
+                <button onclick="nav('jaring'); toggleMobileMenu()"
+                    class="text-left px-3 py-2 rounded-md text-base font-bold text-gray-600 hover:text-fun-yellow hover:bg-yellow-50"><i
+                        class="fa-solid fa-shapes w-6"></i> Jaring-Jaring</button>
+                <button onclick="nav('aktivitas'); toggleMobileMenu()"
+                    class="text-left px-3 py-2 rounded-md text-base font-bold text-gray-600 hover:text-fun-orange hover:bg-orange-50"><i
+                        class="fa-solid fa-pencil-ruler w-6"></i> Aktivitas</button>
+                <button onclick="nav('lkpd'); toggleMobileMenu()"
+                    class="text-left px-3 py-2 rounded-md text-base font-bold text-gray-600 hover:text-teal-600 hover:bg-teal-50"><i
+                        class="fa-solid fa-file-lines w-6"></i> LKPD</button>
+                <button onclick="nav('latihan'); toggleMobileMenu()"
+                    class="text-left px-3 py-2 rounded-md text-base font-bold text-gray-600 hover:text-fun-purple hover:bg-purple-50"><i
+                        class="fa-solid fa-dumbbell w-6"></i> Latihan</button>
+                <button onclick="nav('evaluasi'); toggleMobileMenu()"
+                    class="text-left px-3 py-2 rounded-md text-base font-bold text-gray-600 hover:text-fun-pink hover:bg-pink-50"><i
+                        class="fa-solid fa-star w-6"></i> Evaluasi</button>
+                <button onclick="nav('glosarium'); toggleMobileMenu()"
+                    class="text-left px-3 py-2 rounded-md text-base font-bold text-gray-600 hover:text-fun-blue hover:bg-blue-50"><i
+                        class="fa-solid fa-book w-6"></i> Glosarium</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow w-full max-w-5xl mx-auto p-4 sm:p-6 lg:p-8">
+
+        <!-- SECTION: BERANDA -->
+        <section id="beranda" class="fade-in block">
+            <div
+                class="bg-white rounded-3xl p-8 md:p-12 shadow-xl border-t-8 border-fun-blue text-center relative overflow-hidden">
+                <div
+                    class="absolute top-0 left-0 w-32 h-32 bg-fun-yellow rounded-full mix-blend-multiply filter blur-2xl opacity-50 animate-bounce-slight">
+                </div>
+                <div
+                    class="absolute bottom-0 right-0 w-32 h-32 bg-fun-pink rounded-full mix-blend-multiply filter blur-2xl opacity-50">
+                </div>
+
+                <h1 class="font-display text-4xl md:text-6xl text-gray-800 mb-6 relative z-10">
+                    Petualangan <span class="text-fun-blue">Bangun</span> <span class="text-fun-pink">Ruang</span>!
+                </h1>
+                <p class="text-lg md:text-xl text-gray-600 mb-8 max-w-2xl mx-auto relative z-10">
+                    Halo Petualang Cilik! Mari kita menjelajahi dunia ajaib di sekitar kita dan menemukan rahasia Kubus,
+                    Balok, Prisma, Limas, serta Jaring-Jaringnya. Siap untuk belajar sambil bermain?
+                </p>
+                <img src="https://placehold.co/400x250/FFE4E1/FF69B4?text=Belajar+Itu+Seru!" alt="Ilustrasi Belajar"
+                    class="mx-auto rounded-2xl shadow-md mb-8 w-full max-w-md object-cover border-4 border-white">
+
+                <button onclick="nav('petunjuk')"
+                    class="bg-fun-orange hover:bg-orange-600 text-white font-display text-xl py-4 px-10 rounded-full shadow-lg transform transition hover:scale-105 active:scale-95 relative z-10">
+                    Mulai Petualangan! <i class="fa-solid fa-rocket ml-2"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- SECTION: PETUNJUK -->
+        <section id="petunjuk" class="section-hidden fade-in">
+            <div class="bg-white rounded-3xl p-8 shadow-lg border-t-8 border-fun-yellow">
+                <h2 class="font-display text-3xl text-fun-yellow mb-6 text-center border-b-2 border-yellow-100 pb-4"><i
+                        class="fa-solid fa-map text-2xl mr-2"></i> Peta Petunjuk</h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="flex items-start bg-blue-50 p-4 rounded-xl">
+                        <div
+                            class="bg-fun-blue text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-xl shrink-0 mr-4">
+                            1</div>
+                        <div>
+                            <h3 class="font-bold text-lg text-fun-blue">Tujuan Pembelajaran</h3>
+                            <p class="text-gray-600">Cek dulu apa saja kekuatan baru yang akan kamu dapatkan setelah
+                                petualangan ini.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start bg-green-50 p-4 rounded-xl">
+                        <div
+                            class="bg-fun-green text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-xl shrink-0 mr-4">
+                            2</div>
+                        <div>
+                            <h3 class="font-bold text-lg text-fun-green">Jelajahi Materi & Jaring-Jaring</h3>
+                            <p class="text-gray-600">Pelajari bentuk, sifat, rumus, dan buka lipatan jaring-jaring
+                                bangun ruang secara interaktif!</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start bg-orange-50 p-4 rounded-xl">
+                        <div
+                            class="bg-fun-orange text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-xl shrink-0 mr-4">
+                            3</div>
+                        <div>
+                            <h3 class="font-bold text-lg text-fun-orange">Aktivitas RME & LKPD</h3>
+                            <p class="text-gray-600">Pecahkan masalah nyata menggunakan benda di sekitarmu, lalu isi
+                                Lembar Kerja Peserta Didik (LKPD).</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start bg-pink-50 p-4 rounded-xl">
+                        <div
+                            class="bg-fun-pink text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-xl shrink-0 mr-4">
+                            4</div>
+                        <div>
+                            <h3 class="font-bold text-lg text-fun-pink">Latihan & Evaluasi</h3>
+                            <p class="text-gray-600">Uji seberapa hebat kekuatan matematikamu sekarang. Kumpulkan poin
+                                tertinggi!</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center mt-8">
+                    <button onclick="nav('tujuan')"
+                        class="bg-fun-blue hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-full shadow transition">Lanjut
+                        ke Tujuan <i class="fa-solid fa-arrow-right ml-2"></i></button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: TUJUAN -->
+        <section id="tujuan" class="section-hidden fade-in">
+            <div class="bg-white rounded-3xl p-8 shadow-lg border-t-8 border-fun-green">
+                <h2 class="font-display text-3xl text-fun-green mb-6 text-center border-b-2 border-green-100 pb-4"><i
+                        class="fa-solid fa-bullseye text-2xl mr-2"></i> Tujuan Petualangan Kita</h2>
+
+                <div class="bg-green-50 border-l-4 border-fun-green p-6 rounded-r-xl mb-6">
+                    <p class="text-lg text-gray-700 mb-4">Setelah mengikuti petualangan seru ini, kamu diharapkan mampu:
+                    </p>
+                    <ul class="space-y-4">
+                        <li class="flex items-center"><i
+                                class="fa-solid fa-check-circle text-fun-green mr-3 text-xl"></i> <span>Mengenali bentuk
+                                benda-benda di sekitar yang menyerupai kubus, balok, prisma, dan limas.</span></li>
+                        <li class="flex items-center"><i
+                                class="fa-solid fa-check-circle text-fun-green mr-3 text-xl"></i> <span>Menyebutkan
+                                unsur-unsur bangun ruang (sisi, rusuk, titik sudut).</span></li>
+                        <li class="flex items-center"><i
+                                class="fa-solid fa-check-circle text-fun-green mr-3 text-xl"></i> <span>Menemukan dan
+                                memahami cara menghitung <b>Volume</b> bangun ruang.</span></li>
+                        <li class="flex items-center"><i
+                                class="fa-solid fa-check-circle text-fun-green mr-3 text-xl"></i> <span>Memahami bentuk
+                                <b>Jaring-Jaring</b> bangun ruang dari kardus terbuka.</span></li>
+                    </ul>
+                </div>
+                <div class="text-center">
+                    <button onclick="nav('materi')"
+                        class="bg-fun-green hover:bg-green-600 text-white font-bold py-3 px-8 rounded-full shadow transition">Mulai
+                        Belajar! <i class="fa-solid fa-book-open ml-2"></i></button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: MATERI -->
+        <section id="materi" class="section-hidden fade-in">
+            <div class="bg-white rounded-3xl p-4 md:p-8 shadow-lg border-t-8 border-fun-pink">
+                <h2 class="font-display text-3xl text-fun-pink mb-6 text-center"><i
+                        class="fa-solid fa-shapes text-2xl mr-2"></i> Eksplorasi Bangun Ruang</h2>
+
+                <!-- Shape Tabs -->
+                <div class="flex flex-wrap gap-2 mb-6 justify-center">
+                    <button onclick="showShape('kubus')" id="tab-kubus"
+                        class="shape-tab flex-1 min-w-[120px] px-4 py-3 rounded-xl font-bold border-2 transition tab-active text-center">
+                        <i class="fa-solid fa-cube block text-xl mb-1"></i> Kubus
+                    </button>
+                    <button onclick="showShape('balok')" id="tab-balok"
+                        class="shape-tab flex-1 min-w-[120px] px-4 py-3 rounded-xl font-bold border-2 transition tab-inactive text-center">
+                        <i class="fa-solid fa-box block text-xl mb-1"></i> Balok
+                    </button>
+                    <button onclick="showShape('prisma')" id="tab-prisma"
+                        class="shape-tab flex-1 min-w-[120px] px-4 py-3 rounded-xl font-bold border-2 transition tab-inactive text-center">
+                        <i class="fa-solid fa-campground block text-xl mb-1"></i> Prisma
+                    </button>
+                    <button onclick="showShape('limas')" id="tab-limas"
+                        class="shape-tab flex-1 min-w-[120px] px-4 py-3 rounded-xl font-bold border-2 transition tab-inactive text-center">
+                        <i class="fa-brands fa-monument block text-xl mb-1"></i> Limas
+                    </button>
+                </div>
+
+                <!-- KUBUS CONTENT -->
+                <div id="content-kubus" class="shape-content block space-y-6">
+                    <div class="bg-orange-50 p-6 rounded-2xl">
+                        <h3 class="font-display text-2xl text-fun-orange mb-3">1. Masalah Nyata: Mainan Dadu & Rubik
+                        </h3>
+                        <div class="flex flex-col md:flex-row gap-6 items-center">
+                            <div class="flex-1">
+                                <p class="text-gray-700 leading-relaxed text-lg">
+                                    Pernahkah kamu bermain ular tangga menggunakan <b>dadu</b>? Atau mencoba menyusun
+                                    warna <b>rubik</b>? Benda-benda itu adalah contoh sempurna dari bangun ruang bernama
+                                    <b>Kubus</b>. Semua sisinya berbentuk persegi yang ukurannya persis sama!
+                                </p>
+                            </div>
+                            <div class="flex-1 w-full relative">
+                                <div
+                                    class="absolute -top-3 -right-3 bg-white p-2 rounded-lg shadow-md text-sm font-bold text-fun-blue z-10">
+                                    <i class="fa-solid fa-hand-pointer animate-pulse"></i> Geser Aku!
+                                </div>
+                                <div id="canvas-kubus" class="canvas-container shadow-inner"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="border-2 border-gray-100 rounded-2xl p-6">
+                            <h4 class="font-bold text-xl text-gray-800 mb-4 border-b-2 pb-2"><i
+                                    class="fa-solid fa-list-ul text-fun-blue mr-2"></i> Unsur-Unsur Kubus</h4>
+                            <ul class="space-y-3 text-gray-700">
+                                <li class="flex items-center"><span
+                                        class="bg-blue-100 text-fun-blue font-bold px-3 py-1 rounded-full mr-3 w-12 text-center">6</span>
+                                    <b>Sisi</b> berbentuk persegi sama luas.
+                                </li>
+                                <li class="flex items-center"><span
+                                        class="bg-blue-100 text-fun-blue font-bold px-3 py-1 rounded-full mr-3 w-12 text-center">12</span>
+                                    <b>Rusuk</b> sama panjang.
+                                </li>
+                                <li class="flex items-center"><span
+                                        class="bg-blue-100 text-fun-blue font-bold px-3 py-1 rounded-full mr-3 w-12 text-center">8</span>
+                                    <b>Titik Sudut</b>.
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="bg-blue-50 border-2 border-blue-200 rounded-2xl p-6">
+                            <h4 class="font-bold text-xl text-fun-blue mb-4 border-b-2 border-blue-200 pb-2"><i
+                                    class="fa-solid fa-calculator mr-2"></i> Menemukan Rumus Volume</h4>
+                            <p class="text-gray-700 mb-3">Untuk mencari <b>Volume</b> sebuah kardus kubus, kita kalikan
+                                panjang, lebar, dan tingginya. Karena di kubus ketiganya sama panjang (disebut sisi atau
+                                <span class="italic font-bold">s</span>), maka:
+                            </p>
+                            <div class="bg-white rounded-xl p-4 text-center shadow-sm">
+                                <p class="text-2xl font-display text-fun-pink">Volume = s &times; s &times; s</p>
+                                <p class="text-lg font-bold text-gray-500 mt-1">atau V = s&sup3;</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white border-2 border-blue-100 rounded-2xl p-6">
+                        <h4 class="font-bold text-xl text-fun-blue mb-3"><i class="fa-solid fa-vector-square mr-2"></i>
+                            Bagaimana dengan Luas Permukaannya?</h4>
+                        <p class="text-gray-700 mb-3">
+                            Kalau tadi kita mencari isinya, sekarang coba bayangkan kita mau membungkus kotak dadu itu
+                            dengan kertas kado. Berapa banyak kertas yang kita butuhkan? Itulah yang dinamakan <b>luas
+                                permukaan</b>. Karena kubus punya 6 sisi persegi yang sama luas, tinggal dikalikan 6
+                            saja.
+                        </p>
+                        <div class="bg-blue-50 rounded-xl p-4 text-center">
+                            <p class="text-xl font-display text-fun-blue">Luas Permukaan = 6 &times; s &times; s</p>
+                            <p class="text-sm font-bold text-gray-500 mt-1">atau L = 6s&sup2;</p>
+                        </div>
+                    </div>
+
+                    <div
+                        class="bg-gradient-to-br from-pink-50 to-orange-50 border-2 border-dashed border-fun-pink rounded-2xl p-6">
+                        <h4 class="font-bold text-xl text-fun-pink mb-3"><i class="fa-solid fa-pen-fancy mr-2"></i> Yuk,
+                            Coba Pahami Contoh Soalnya</h4>
+                        <p class="text-gray-700 mb-4">Kak Rani mempunyai kotak kado berbentuk kubus untuk hadiah ulang
+                            tahun adiknya. Panjang rusuk kotak itu 12 cm. Berapa volume dan luas permukaan kotak kado
+                            tersebut?</p>
+                        <div class="bg-white rounded-xl p-4 space-y-2 text-gray-700">
+                            <p><b>Diketahui:</b> panjang rusuk kubus (s) = 12 cm</p>
+                            <p><b>Ditanyakan:</b> volume (V) dan luas permukaan (L) kotak kado</p>
+                            <p><b>Jawab:</b></p>
+                            <p class="pl-4">V = s&sup3; = 12 &times; 12 &times; 12 = 1.728 cm&sup3;</p>
+                            <p class="pl-4">L = 6s&sup2; = 6 &times; (12 &times; 12) = 6 &times; 144 = 864 cm&sup2;</p>
+                            <p><b>Kesimpulan:</b> Jadi, volume kotak kado Kak Rani adalah 1.728 cm&sup3; dan luas
+                                permukaannya 864 cm&sup2;.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BALOK CONTENT -->
+                <div id="content-balok" class="shape-content hidden space-y-6">
+                    <div class="bg-blue-50 p-6 rounded-2xl">
+                        <h3 class="font-display text-2xl text-fun-blue mb-3">1. Masalah Nyata: Kotak Sepatu & Akuarium
+                        </h3>
+                        <div class="flex flex-col md:flex-row gap-6 items-center">
+                            <div class="flex-1">
+                                <p class="text-gray-700 leading-relaxed text-lg">
+                                    Coba perhatikan <b>kotak sepatu</b>, <b>lemari pakaian</b>, atau <b>akuarium</b> di
+                                    rumahmu. Bentuknya mirip kubus, tapi agak memanjang, kan? Bentuk ini disebut
+                                    <b>Balok</b>. Sisi-sisi yang berhadapan ukurannya sama besar!
+                                </p>
+                            </div>
+                            <div class="flex-1 w-full relative">
+                                <div
+                                    class="absolute -top-3 -right-3 bg-white p-2 rounded-lg shadow-md text-sm font-bold text-fun-orange z-10">
+                                    <i class="fa-solid fa-hand-pointer animate-pulse"></i> Geser Aku!
+                                </div>
+                                <div id="canvas-balok" class="canvas-container shadow-inner"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="border-2 border-gray-100 rounded-2xl p-6">
+                            <h4 class="font-bold text-xl text-gray-800 mb-4 border-b-2 pb-2"><i
+                                    class="fa-solid fa-list-ul text-fun-orange mr-2"></i> Unsur-Unsur Balok</h4>
+                            <ul class="space-y-3 text-gray-700">
+                                <li class="flex items-center"><span
+                                        class="bg-orange-100 text-fun-orange font-bold px-3 py-1 rounded-full mr-3 w-12 text-center">6</span>
+                                    <b>Sisi</b> (berbentuk persegi panjang).
+                                </li>
+                                <li class="flex items-center"><span
+                                        class="bg-orange-100 text-fun-orange font-bold px-3 py-1 rounded-full mr-3 w-12 text-center">12</span>
+                                    <b>Rusuk</b> (4 panjang, 4 lebar, 4 tinggi).
+                                </li>
+                                <li class="flex items-center"><span
+                                        class="bg-orange-100 text-fun-orange font-bold px-3 py-1 rounded-full mr-3 w-12 text-center">8</span>
+                                    <b>Titik Sudut</b>.
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="bg-orange-50 border-2 border-orange-200 rounded-2xl p-6">
+                            <h4 class="font-bold text-xl text-fun-orange mb-4 border-b-2 border-orange-200 pb-2"><i
+                                    class="fa-solid fa-calculator mr-2"></i> Menemukan Rumus Volume</h4>
+                            <p class="text-gray-700 mb-3">Untuk mencari <b>Volume</b> akuarium balok, kita harus
+                                mengalikan bagian alasnya (panjang &times; lebar) dengan tingginya:</p>
+                            <div class="bg-white rounded-xl p-4 text-center shadow-sm">
+                                <p class="text-xl md:text-2xl font-display text-fun-blue">Volume = p &times; l &times; t
+                                </p>
+                                <p class="text-sm font-bold text-gray-500 mt-2">p = panjang, l = lebar, t = tinggi</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white border-2 border-orange-100 rounded-2xl p-6">
+                        <h4 class="font-bold text-xl text-fun-orange mb-3"><i
+                                class="fa-solid fa-vector-square mr-2"></i> Bagaimana dengan Luas Permukaannya?</h4>
+                        <p class="text-gray-700 mb-3">
+                            Balok memiliki 3 pasang sisi yang saling berhadapan dan ukurannya sama: sisi atas-bawah,
+                            depan-belakang, dan kiri-kanan. Karena itu, luas permukaannya dihitung dengan menjumlahkan
+                            luas ketiga pasang sisi tersebut.
+                        </p>
+                        <div class="bg-orange-50 rounded-xl p-4 text-center">
+                            <p class="text-lg md:text-xl font-display text-fun-orange">Luas Permukaan = 2 &times;
+                                (p&times;l + p&times;t + l&times;t)</p>
+                        </div>
+                    </div>
+
+                    <div
+                        class="bg-gradient-to-br from-pink-50 to-orange-50 border-2 border-dashed border-fun-pink rounded-2xl p-6">
+                        <h4 class="font-bold text-xl text-fun-pink mb-3"><i class="fa-solid fa-pen-fancy mr-2"></i> Yuk,
+                            Coba Pahami Contoh Soalnya</h4>
+                        <p class="text-gray-700 mb-4">Pak Dedi membuat akuarium kecil berbentuk balok dengan panjang 40
+                            cm, lebar 20 cm, dan tinggi 25 cm. Berapa volume air maksimal yang bisa ditampung akuarium
+                            itu, dan berapa luas kaca yang dibutuhkan untuk membuatnya?</p>
+                        <div class="bg-white rounded-xl p-4 space-y-2 text-gray-700">
+                            <p><b>Diketahui:</b> panjang (p) = 40 cm, lebar (l) = 20 cm, tinggi (t) = 25 cm</p>
+                            <p><b>Ditanyakan:</b> volume (V) dan luas permukaan (L) akuarium</p>
+                            <p><b>Jawab:</b></p>
+                            <p class="pl-4">V = p &times; l &times; t = 40 &times; 20 &times; 25 = 20.000 cm&sup3;</p>
+                            <p class="pl-4">L = 2 &times; (p&times;l + p&times;t + l&times;t)</p>
+                            <p class="pl-4">L = 2 &times; ((40&times;20) + (40&times;25) + (20&times;25))</p>
+                            <p class="pl-4">L = 2 &times; (800 + 1.000 + 500) = 2 &times; 2.300 = 4.600 cm&sup2;</p>
+                            <p><b>Kesimpulan:</b> Jadi, akuarium Pak Dedi dapat menampung air sebanyak 20.000 cm&sup3;
+                                (setara 20 liter), dan luas kaca yang dibutuhkan adalah 4.600 cm&sup2;.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PRISMA CONTENT -->
+                <div id="content-prisma" class="shape-content hidden space-y-6">
+                    <div class="bg-green-50 p-6 rounded-2xl">
+                        <h3 class="font-display text-2xl text-fun-green mb-3">1. Masalah Nyata: Tenda Pramuka & Atap
+                            Rumah</h3>
+                        <div class="flex flex-col md:flex-row gap-6 items-center">
+                            <div class="flex-1">
+                                <p class="text-gray-700 leading-relaxed text-lg">
+                                    Pernah ikut berkemah? <b>Tenda pramuka</b> biasanya memiliki alas dan atap yang
+                                    berbentuk segitiga yang sama persis. Bangun ruang yang memiliki alas dan tutup yang
+                                    bentuknya sama disebut <b>Prisma</b>. Ini adalah Prisma Segitiga!
+                                </p>
+                            </div>
+                            <div class="flex-1 w-full relative">
+                                <div
+                                    class="absolute -top-3 -right-3 bg-white p-2 rounded-lg shadow-md text-sm font-bold text-fun-pink z-10">
+                                    <i class="fa-solid fa-hand-pointer animate-pulse"></i> Geser Aku!
+                                </div>
+                                <div id="canvas-prisma" class="canvas-container shadow-inner"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="border-2 border-gray-100 rounded-2xl p-6">
+                            <h4 class="font-bold text-xl text-gray-800 mb-4 border-b-2 pb-2"><i
+                                    class="fa-solid fa-list-ul text-fun-pink mr-2"></i> Unsur Prisma Segitiga</h4>
+                            <ul class="space-y-3 text-gray-700">
+                                <li class="flex items-center"><span
+                                        class="bg-pink-100 text-fun-pink font-bold px-3 py-1 rounded-full mr-3 w-12 text-center">5</span>
+                                    <b>Sisi</b> (2 segitiga, 3 persegi panjang).
+                                </li>
+                                <li class="flex items-center"><span
+                                        class="bg-pink-100 text-fun-pink font-bold px-3 py-1 rounded-full mr-3 w-12 text-center">9</span>
+                                    <b>Rusuk</b>.
+                                </li>
+                                <li class="flex items-center"><span
+                                        class="bg-pink-100 text-fun-pink font-bold px-3 py-1 rounded-full mr-3 w-12 text-center">6</span>
+                                    <b>Titik Sudut</b>.
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="bg-pink-50 border-2 border-pink-200 rounded-2xl p-6">
+                            <h4 class="font-bold text-xl text-fun-pink mb-4 border-b-2 border-pink-200 pb-2"><i
+                                    class="fa-solid fa-calculator mr-2"></i> Menemukan Rumus Volume</h4>
+                            <p class="text-gray-700 mb-3">Secara umum, volume prisma adalah mengalikan Luas Alasnya
+                                dengan Tinggi Prismanya.</p>
+                            <div class="bg-white rounded-xl p-4 text-center shadow-sm">
+                                <p class="text-xl font-display text-fun-green">Volume = Luas Alas &times; Tinggi Prisma
+                                </p>
+                                <p class="text-sm font-bold text-gray-500 mt-2">Jika alas segitiga: L.Alas = &frac12;
+                                    &times; a &times; t<sub>segitiga</sub></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white border-2 border-green-100 rounded-2xl p-6">
+                        <h4 class="font-bold text-xl text-fun-green mb-3"><i class="fa-solid fa-vector-square mr-2"></i>
+                            Bagaimana dengan Luas Permukaannya?</h4>
+                        <p class="text-gray-700 mb-3">
+                            Untuk membungkus tenda, kita butuh kain seluas semua sisinya, yaitu 2 buah segitiga (alas
+                            dan tutup) ditambah 3 buah persegi panjang di sekelilingnya. Sisi tegak ini disebut selimut
+                            prisma.
+                        </p>
+                        <div class="bg-green-50 rounded-xl p-4 text-center">
+                            <p class="text-lg font-display text-fun-green">Luas Permukaan = (2 &times; Luas Alas) +
+                                (Keliling Alas &times; Tinggi Prisma)</p>
+                        </div>
+                    </div>
+
+                    <div
+                        class="bg-gradient-to-br from-pink-50 to-orange-50 border-2 border-dashed border-fun-pink rounded-2xl p-6">
+                        <h4 class="font-bold text-xl text-fun-pink mb-3"><i class="fa-solid fa-pen-fancy mr-2"></i> Yuk,
+                            Coba Pahami Contoh Soalnya</h4>
+                        <p class="text-gray-700 mb-4">Regu Pramuka Andi mendirikan tenda berbentuk prisma segitiga. Alas
+                            segitiga tenda memiliki panjang alas 2 m dan tinggi segitiga 1,5 m, dengan panjang sisi
+                            miring segitiga masing-masing 2,5 m. Panjang tenda (tinggi prisma) adalah 3 m. Berapa volume
+                            ruang di dalam tenda tersebut?</p>
+                        <div class="bg-white rounded-xl p-4 space-y-2 text-gray-700">
+                            <p><b>Diketahui:</b> alas segitiga (a) = 2 m, tinggi segitiga (t<sub>segitiga</sub>) = 1,5
+                                m, tinggi prisma (t<sub>prisma</sub>) = 3 m</p>
+                            <p><b>Ditanyakan:</b> volume (V) tenda</p>
+                            <p><b>Jawab:</b></p>
+                            <p class="pl-4">Luas Alas = &frac12; &times; a &times; t<sub>segitiga</sub> = &frac12;
+                                &times; 2 &times; 1,5 = 1,5 m&sup2;</p>
+                            <p class="pl-4">V = Luas Alas &times; t<sub>prisma</sub> = 1,5 &times; 3 = 4,5 m&sup3;</p>
+                            <p><b>Kesimpulan:</b> Jadi, volume ruang di dalam tenda Regu Andi adalah 4,5 m&sup3;.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- LIMAS CONTENT -->
+                <div id="content-limas" class="shape-content hidden space-y-6">
+                    <div class="bg-yellow-50 p-6 rounded-2xl">
+                        <h3 class="font-display text-2xl text-fun-yellow mb-3 text-yellow-600">1. Masalah Nyata:
+                            Piramida Mesir</h3>
+                        <div class="flex flex-col md:flex-row gap-6 items-center">
+                            <div class="flex-1">
+                                <p class="text-gray-700 leading-relaxed text-lg">
+                                    Pernah melihat gambar <b>Piramida di Mesir</b>? Bangunan megah ini memiliki alas
+                                    berbentuk segi empat, dan dinding-dindingnya berbentuk segitiga yang meruncing
+                                    bertemu di satu titik puncak. Bentuk ini disebut <b>Limas</b>!
+                                </p>
+                            </div>
+                            <div class="flex-1 w-full relative">
+                                <div
+                                    class="absolute -top-3 -right-3 bg-white p-2 rounded-lg shadow-md text-sm font-bold text-fun-blue z-10">
+                                    <i class="fa-solid fa-hand-pointer animate-pulse"></i> Geser Aku!
+                                </div>
+                                <div id="canvas-limas" class="canvas-container shadow-inner"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="border-2 border-gray-100 rounded-2xl p-6">
+                            <h4 class="font-bold text-xl text-gray-800 mb-4 border-b-2 pb-2"><i
+                                    class="fa-solid fa-list-ul text-yellow-600 mr-2"></i> Unsur Limas Segiempat</h4>
+                            <ul class="space-y-3 text-gray-700">
+                                <li class="flex items-center"><span
+                                        class="bg-yellow-200 text-yellow-700 font-bold px-3 py-1 rounded-full mr-3 w-12 text-center">5</span>
+                                    <b>Sisi</b> (1 segiempat alas, 4 segitiga tegak).
+                                </li>
+                                <li class="flex items-center"><span
+                                        class="bg-yellow-200 text-yellow-700 font-bold px-3 py-1 rounded-full mr-3 w-12 text-center">8</span>
+                                    <b>Rusuk</b>.
+                                </li>
+                                <li class="flex items-center"><span
+                                        class="bg-yellow-200 text-yellow-700 font-bold px-3 py-1 rounded-full mr-3 w-12 text-center">5</span>
+                                    <b>Titik Sudut</b> (1 merupakan titik puncak).
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="bg-yellow-100 border-2 border-yellow-200 rounded-2xl p-6">
+                            <h4 class="font-bold text-xl text-yellow-600 mb-4 border-b-2 border-yellow-200 pb-2"><i
+                                    class="fa-solid fa-calculator mr-2"></i> Menemukan Rumus Volume</h4>
+                            <p class="text-gray-700 mb-3">Karena limas meruncing ke atas, volumenya hanya <b>sepertiga
+                                    (1/3)</b> dari volume prisma dengan alas yang sama.</p>
+                            <div class="bg-white rounded-xl p-4 text-center shadow-sm">
+                                <p class="text-xl font-display text-fun-orange">Volume = &frac13; &times; Luas Alas
+                                    &times; Tinggi</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white border-2 border-yellow-100 rounded-2xl p-6">
+                        <h4 class="font-bold text-xl text-yellow-600 mb-3"><i
+                                class="fa-solid fa-vector-square mr-2"></i> Bagaimana dengan Luas Permukaannya?</h4>
+                        <p class="text-gray-700 mb-3">
+                            Luas permukaan limas didapat dari luas alasnya ditambah luas semua sisi tegak (selubung)
+                            yang berbentuk segitiga di sekelilingnya.
+                        </p>
+                        <div class="bg-yellow-50 rounded-xl p-4 text-center">
+                            <p class="text-lg font-display text-yellow-700">Luas Permukaan = Luas Alas + Jumlah Luas
+                                Sisi Tegak</p>
+                        </div>
+                    </div>
+
+                    <div
+                        class="bg-gradient-to-br from-pink-50 to-orange-50 border-2 border-dashed border-fun-pink rounded-2xl p-6">
+                        <h4 class="font-bold text-xl text-fun-pink mb-3"><i class="fa-solid fa-pen-fancy mr-2"></i> Yuk,
+                            Coba Pahami Contoh Soalnya</h4>
+                        <p class="text-gray-700 mb-4">Sebuah miniatur piramida berbentuk limas segiempat memiliki alas
+                            persegi dengan panjang sisi 10 cm dan tinggi limas 12 cm. Berapa volume miniatur piramida
+                            tersebut?</p>
+                        <div class="bg-white rounded-xl p-4 space-y-2 text-gray-700">
+                            <p><b>Diketahui:</b> sisi alas persegi (s) = 10 cm, tinggi limas (t) = 12 cm</p>
+                            <p><b>Ditanyakan:</b> volume (V) miniatur piramida</p>
+                            <p><b>Jawab:</b></p>
+                            <p class="pl-4">Luas Alas = s &times; s = 10 &times; 10 = 100 cm&sup2;</p>
+                            <p class="pl-4">V = &frac13; &times; Luas Alas &times; t = &frac13; &times; 100 &times; 12 =
+                                &frac13; &times; 1.200 = 400 cm&sup3;</p>
+                            <p><b>Kesimpulan:</b> Jadi, volume miniatur piramida tersebut adalah 400 cm&sup3;.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SECTION: JARING-JARING BANGUN RUANG -->
+        <section id="jaring" class="section-hidden fade-in">
+            <div class="bg-white rounded-3xl p-4 md:p-8 shadow-lg border-t-8 border-fun-yellow">
+                <h2 class="font-display text-3xl text-fun-yellow mb-4 text-center"><i
+                        class="fa-solid fa-shapes mr-2"></i> Eksplorasi Jaring-Jaring Bangun Ruang</h2>
+                <p class="text-center text-gray-600 mb-6 max-w-2xl mx-auto">
+                    Apa itu jaring-jaring? Bayangkan kamu mempunyai kardus kemasan, lalu kardus tersebut dipotong pada
+                    beberapa rusuknya dan direbahkan di lantai secara datar. Bentuk datar inilah yang dinamakan
+                    <b>jaring-jaring</b>!
+                </p>
+
+                <!-- Jaring Shape Tabs -->
+                <div class="flex flex-wrap gap-2 mb-6 justify-center">
+                    <button onclick="showNet('kubus')" id="net-tab-kubus"
+                        class="net-tab flex-1 min-w-[120px] px-4 py-3 rounded-xl font-bold border-2 transition tab-active text-center">
+                        <i class="fa-solid fa-cube block text-xl mb-1"></i> Jaring Kubus
+                    </button>
+                    <button onclick="showNet('balok')" id="net-tab-balok"
+                        class="net-tab flex-1 min-w-[120px] px-4 py-3 rounded-xl font-bold border-2 transition tab-inactive text-center">
+                        <i class="fa-solid fa-box block text-xl mb-1"></i> Jaring Balok
+                    </button>
+                    <button onclick="showNet('prisma')" id="net-tab-prisma"
+                        class="net-tab flex-1 min-w-[120px] px-4 py-3 rounded-xl font-bold border-2 transition tab-inactive text-center">
+                        <i class="fa-solid fa-campground block text-xl mb-1"></i> Jaring Prisma
+                    </button>
+                    <button onclick="showNet('limas')" id="net-tab-limas"
+                        class="net-tab flex-1 min-w-[120px] px-4 py-3 rounded-xl font-bold border-2 transition tab-inactive text-center">
+                        <i class="fa-brands fa-monument block text-xl mb-1"></i> Jaring Limas
+                    </button>
+                </div>
+
+                <!-- NET CONTENT KUBUS -->
+                <div id="net-content-kubus" class="net-content block space-y-6">
+                    <div class="bg-yellow-50 p-6 rounded-2xl border-2 border-yellow-200">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                            <div>
+                                <h3 class="font-display text-2xl text-yellow-700 mb-3">Jaring-Jaring Kubus</h3>
+                                <p class="text-gray-700 leading-relaxed mb-4">
+                                    Kubus tersusun atas 6 buah persegi yang kongruen (sama dan sebangun). Ketika
+                                    dibentangkan, jaring-jaring kubus membentuk pola salib atau rangkaian 6 persegi
+                                    sambung menyambung.
+                                </p>
+                                <div class="bg-white p-4 rounded-xl shadow-sm border border-yellow-100">
+                                    <p class="font-bold text-gray-800 text-sm mb-1"><i
+                                            class="fa-solid fa-lightbulb text-fun-yellow mr-1"></i> Fakta Unik:</p>
+                                    <p class="text-gray-600 text-sm">Terdapat 11 variasi pola jaring-jaring kubus yang
+                                        dapat membentuk sebuah kubus utuh jika dilipat kembali!</p>
+                                </div>
+                            </div>
+                            <div class="relative">
+                                <div
+                                    class="absolute -top-3 -right-3 bg-white p-2 rounded-lg shadow-md text-sm font-bold text-yellow-700 z-10">
+                                    Pola Salib 2D</div>
+                                <div id="net-canvas-kubus"
+                                    class="net-canvas-container flex items-center justify-center p-4"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NET CONTENT BALOK -->
+                <div id="net-content-balok" class="net-content hidden space-y-6">
+                    <div class="bg-blue-50 p-6 rounded-2xl border-2 border-blue-200">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                            <div>
+                                <h3 class="font-display text-2xl text-fun-blue mb-3">Jaring-Jaring Balok</h3>
+                                <p class="text-gray-700 leading-relaxed mb-4">
+                                    Mirip dengan kubus, jaring-jaring balok terdiri dari 6 buah sisi berbentuk persegi
+                                    panjang. Pasangan sisi yang berhadapan memiliki ukuran panjang dan lebar yang persis
+                                    sama.
+                                </p>
+                                <div class="bg-white p-4 rounded-xl shadow-sm border border-blue-100">
+                                    <p class="font-bold text-gray-800 text-sm mb-1"><i
+                                            class="fa-solid fa-lightbulb text-fun-blue mr-1"></i> Tips Membuat:</p>
+                                    <p class="text-gray-600 text-sm">Pastikan sisi atas dan bawah serta sisi samping
+                                        kiri-kanan berpasangan dengan ukuran pas agar bisa dilipat jadi kotak sepatu!
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="relative">
+                                <div
+                                    class="absolute -top-3 -right-3 bg-white p-2 rounded-lg shadow-md text-sm font-bold text-fun-blue z-10">
+                                    Pola Balok 2D</div>
+                                <div id="net-canvas-balok"
+                                    class="net-canvas-container flex items-center justify-center p-4"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NET CONTENT PRISMA -->
+                <div id="net-content-prisma" class="net-content hidden space-y-6">
+                    <div class="bg-green-50 p-6 rounded-2xl border-2 border-green-200">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                            <div>
+                                <h3 class="font-display text-2xl text-fun-green mb-3">Jaring-Jaring Prisma Segitiga</h3>
+                                <p class="text-gray-700 leading-relaxed mb-4">
+                                    Jaring-jaring prisma segitiga terdiri dari <b>2 buah segitiga</b> yang identik
+                                    (sebagai alas dan tutup) serta <b>3 buah persegi panjang</b> yang mengelilinginya di
+                                    bagian tengah.
+                                </p>
+                                <div class="bg-white p-4 rounded-xl shadow-sm border border-green-100">
+                                    <p class="font-bold text-gray-800 text-sm mb-1"><i
+                                            class="fa-solid fa-lightbulb text-fun-green mr-1"></i> Bentuk Tenda:</p>
+                                    <p class="text-gray-600 text-sm">Bayangkan kain tenda kemah jika dibentangkan rata
+                                        di atas tanah.</p>
+                                </div>
+                            </div>
+                            <div class="relative">
+                                <div
+                                    class="absolute -top-3 -right-3 bg-white p-2 rounded-lg shadow-md text-sm font-bold text-fun-green z-10">
+                                    Pola Prisma 2D</div>
+                                <div id="net-canvas-prisma"
+                                    class="net-canvas-container flex items-center justify-center p-4"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NET CONTENT LIMAS -->
+                <div id="net-content-limas" class="net-content hidden space-y-6">
+                    <div class="bg-pink-50 p-6 rounded-2xl border-2 border-pink-200">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                            <div>
+                                <h3 class="font-display text-2xl text-fun-pink mb-3">Jaring-Jaring Limas Segiempat</h3>
+                                <p class="text-gray-700 leading-relaxed mb-4">
+                                    Jaring-jaring limas segiempat terdiri dari sebuah alas berbentuk persegi/segiempat
+                                    di tengah, dikelilingi oleh <b>4 buah segitiga sama kaki</b> pada setiap sisinya
+                                    yang jika dilipat akan bertemu di satu puncak.
+                                </p>
+                                <div class="bg-white p-4 rounded-xl shadow-sm border border-pink-100">
+                                    <p class="font-bold text-gray-800 text-sm mb-1"><i
+                                            class="fa-solid fa-lightbulb text-fun-pink mr-1"></i> Bentuk Bintang:</p>
+                                    <p class="text-gray-600 text-sm">Pola jaring limas menyerupai kelopak bunga atau
+                                        bintang dengan alas segiempat di pusatnya.</p>
+                                </div>
+                            </div>
+                            <div class="relative">
+                                <div
+                                    class="absolute -top-3 -right-3 bg-white p-2 rounded-lg shadow-md text-sm font-bold text-fun-pink z-10">
+                                    Pola Limas 2D</div>
+                                <div id="net-canvas-limas"
+                                    class="net-canvas-container flex items-center justify-center p-4"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SECTION: AKTIVITAS RME -->
+        <section id="aktivitas" class="section-hidden fade-in">
+            <div class="bg-white rounded-3xl p-6 md:p-8 shadow-lg border-t-8 border-fun-orange">
+                <h2 class="font-display text-3xl text-fun-orange mb-4 text-center"><i
+                        class="fa-solid fa-search mr-2"></i> Penyelidikan Matematika!</h2>
+                <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">Mari kita gunakan benda di sekitarmu untuk
+                    menemukan konsep Volume.</p>
+
+                <div class="bg-orange-50 rounded-2xl p-6 border-2 border-orange-200">
+                    <h3 class="font-bold text-xl text-fun-orange mb-4">Kasus: Mengisi Kotak Susu</h3>
+                    <div class="flex flex-col md:flex-row gap-6">
+                        <div class="flex-1">
+                            <p class="text-gray-700 mb-4">
+                                Budi memiliki kardus berbentuk <b>Balok</b>. Ia ingin membelikan ibunya sekotak susu.
+                                Budi mengukur kardus tersebut dengan penggaris:
+                            </p>
+                            <ul class="list-disc list-inside text-gray-700 mb-4 ml-2">
+                                <li>Panjang kardus: <span class="font-bold text-blue-600">10 cm</span></li>
+                                <li>Lebar kardus: <span class="font-bold text-green-600">5 cm</span></li>
+                                <li>Tinggi kardus: <span class="font-bold text-pink-600">8 cm</span></li>
+                            </ul>
+                            <p class="text-gray-700 font-bold mb-2">Bantu Budi menghitung Volume kardus agar tidak salah
+                                beli!</p>
+
+                            <!-- Interactive Calculator -->
+                            <div class="bg-white p-4 rounded-xl shadow-inner border border-gray-200 mt-4">
+                                <label class="block text-sm font-bold text-gray-700 mb-1">Langkah 1: Masukkan panjang
+                                    (p)</label>
+                                <input type="number" id="rme-p"
+                                    class="w-full border-2 border-blue-200 rounded-lg p-2 mb-3 focus:outline-none focus:border-fun-blue"
+                                    placeholder="Contoh: 10">
+
+                                <label class="block text-sm font-bold text-gray-700 mb-1">Langkah 2: Masukkan lebar
+                                    (l)</label>
+                                <input type="number" id="rme-l"
+                                    class="w-full border-2 border-green-200 rounded-lg p-2 mb-3 focus:outline-none focus:border-fun-green"
+                                    placeholder="Contoh: 5">
+
+                                <label class="block text-sm font-bold text-gray-700 mb-1">Langkah 3: Masukkan tinggi
+                                    (t)</label>
+                                <input type="number" id="rme-t"
+                                    class="w-full border-2 border-pink-200 rounded-lg p-2 mb-4 focus:outline-none focus:border-fun-pink"
+                                    placeholder="Contoh: 8">
+
+                                <button onclick="hitungRME()"
+                                    class="w-full bg-fun-orange hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-lg transition">Hitung
+                                    Volume <i class="fa-solid fa-calculator ml-1"></i></button>
+
+                                <div id="rme-hasil"
+                                    class="hidden mt-4 p-3 bg-green-100 text-green-800 rounded-lg font-bold text-center text-lg animate-bounce-slight">
+                                    <!-- Result will appear here -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex-1 flex justify-center items-center">
+                            <img src="https://placehold.co/300x250/FFD166/ffffff?text=Kotak+Susu+Budi"
+                                alt="Ilustrasi Kotak Susu" class="rounded-xl shadow-md border-4 border-white">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: LKPD -->
+        <section id="lkpd" class="section-hidden fade-in">
+            <div
+                class="bg-white rounded-3xl p-6 md:p-8 shadow-lg border-t-8 border-teal-500 print:shadow-none print:border-0">
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
+                    <h2 class="font-display text-3xl text-teal-600 text-center md:text-left"><i
+                            class="fa-solid fa-file-lines mr-2"></i> Lembar Kerja Peserta Didik (LKPD)</h2>
+                    <button onclick="window.print()"
+                        class="print:hidden bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 px-5 rounded-full shadow transition self-center md:self-auto"><i
+                            class="fa-solid fa-print mr-2"></i>Cetak LKPD</button>
+                </div>
+                <p class="text-center md:text-left text-gray-600 mb-6">Kerjakan langsung di layar, lalu catat juga
+                    hasilnya di buku tulismu. Ajak Ayah/Ibu atau kakakmu mencari benda-benda yang dibutuhkan, ya!</p>
+
+                <div
+                    class="bg-teal-50 border-2 border-teal-200 rounded-2xl p-4 mb-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-sm font-bold text-teal-700 mb-1">Nama Petualang</label>
+                        <input type="text"
+                            class="w-full border-2 border-teal-200 rounded-lg p-2 focus:outline-none focus:border-teal-500"
+                            placeholder="Tulis namamu di sini">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-teal-700 mb-1">Kelas / No. Absen</label>
+                        <input type="text"
+                            class="w-full border-2 border-teal-200 rounded-lg p-2 focus:outline-none focus:border-teal-500"
+                            placeholder="Contoh: V-A / 12">
+                    </div>
+                </div>
+
+                <!-- LKPD 1: KUBUS & BALOK - MENGUKUR BENDA NYATA -->
+                <div class="border-2 border-blue-200 rounded-2xl p-6 mb-6">
+                    <h3 class="font-display text-xl text-fun-blue mb-2"><i class="fa-solid fa-ruler-combined mr-2"></i>
+                        Kegiatan 1 &mdash; Berburu Kubus dan Balok di Rumah</h3>
+                    <p class="text-gray-700 mb-3"><b>Tujuan:</b> menemukan sendiri benda-benda berbentuk kubus dan balok
+                        di lingkunganmu, lalu menghitung volumenya.</p>
+                    <p class="text-gray-700 mb-2"><b>Alat dan bahan:</b> penggaris atau meteran kain, alat tulis, dan
+                        dua benda dari rumahmu (satu menyerupai kubus, satu menyerupai balok, misalnya kotak kapur,
+                        kardus mi instan, kotak tisu, atau dus sepatu).</p>
+                    <p class="text-gray-700 mb-4"><b>Langkah kerja:</b></p>
+                    <ol class="list-decimal list-inside text-gray-700 space-y-1 mb-4 ml-2">
+                        <li>Carilah satu benda berbentuk kubus dan satu benda berbentuk balok di sekitarmu.</li>
+                        <li>Ukurlah panjang rusuk atau sisi-sisinya menggunakan penggaris, catat dalam satuan cm.</li>
+                        <li>Hitunglah volume kedua benda tersebut memakai rumus yang sudah kamu pelajari.</li>
+                        <li>Tuliskan hasil pengukuran dan hitunganmu pada tabel di bawah ini.</li>
+                    </ol>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm border-collapse mb-4">
+                            <thead>
+                                <tr class="bg-blue-50 text-fun-blue">
+                                    <th class="border border-blue-200 p-2">Nama Benda</th>
+                                    <th class="border border-blue-200 p-2">Bentuk</th>
+                                    <th class="border border-blue-200 p-2">Ukuran (cm)</th>
+                                    <th class="border border-blue-200 p-2">Volume (cm&sup3;)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="border border-gray-200 p-1"><input type="text"
+                                            class="w-full p-1 border rounded" placeholder="misalnya: kotak kapur"></td>
+                                    <td class="border border-gray-200 p-1 text-center">Kubus</td>
+                                    <td class="border border-gray-200 p-1"><input type="text"
+                                            class="w-full p-1 border rounded" placeholder="s = ..."></td>
+                                    <td class="border border-gray-200 p-1"><input type="text"
+                                            class="w-full p-1 border rounded" placeholder="V = ..."></td>
+                                </tr>
+                                <tr>
+                                    <td class="border border-gray-200 p-1"><input type="text"
+                                            class="w-full p-1 border rounded" placeholder="misalnya: dus sepatu"></td>
+                                    <td class="border border-gray-200 p-1 text-center">Balok</td>
+                                    <td class="border border-gray-200 p-1"><input type="text"
+                                            class="w-full p-1 border rounded" placeholder="p, l, t = ..."></td>
+                                    <td class="border border-gray-200 p-1"><input type="text"
+                                            class="w-full p-1 border rounded" placeholder="V = ..."></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Pertanyaan renungan: dari dua benda tadi,
+                        mana yang volumenya lebih besar? Mengapa demikian?</label>
+                    <textarea
+                        class="w-full border-2 border-gray-200 rounded-lg p-2 focus:outline-none focus:border-fun-blue"
+                        rows="3" placeholder="Tulis jawabanmu di sini..."></textarea>
+                </div>
+
+                <!-- LKPD 2: JARING-JARING -->
+                <div class="border-2 border-yellow-200 rounded-2xl p-6 mb-6">
+                    <h3 class="font-display text-xl text-yellow-600 mb-2"><i class="fa-solid fa-scissors mr-2"></i>
+                        Kegiatan 2 &mdash; Membedah Kardus Bekas</h3>
+                    <p class="text-gray-700 mb-3"><b>Tujuan:</b> mengamati bentuk jaring-jaring dari benda nyata.</p>
+                    <p class="text-gray-700 mb-2"><b>Alat dan bahan:</b> satu kardus atau dus bekas berbentuk
+                        kubus/balok, gunting (minta bantuan orang tua), dan alat tulis.</p>
+                    <p class="text-gray-700 mb-4"><b>Langkah kerja:</b> guntinglah sepanjang beberapa rusuk kardus
+                        dengan hati-hati sampai kardus bisa direbahkan menjadi bentuk datar. Amati polanya, lalu jawab
+                        pertanyaan berikut.</p>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-1">1. Ada berapa banyak bidang datar
+                                yang terbentuk setelah kardusmu direbahkan?</label>
+                            <input type="text"
+                                class="w-full border-2 border-gray-200 rounded-lg p-2 focus:outline-none focus:border-yellow-500"
+                                placeholder="Jawabanmu...">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-1">2. Gambarkan atau ceritakan bentuk
+                                jaring-jaring yang kamu temukan (apakah menyerupai salib, huruf, atau bentuk
+                                lain)?</label>
+                            <textarea
+                                class="w-full border-2 border-gray-200 rounded-lg p-2 focus:outline-none focus:border-yellow-500"
+                                rows="3" placeholder="Ceritakan di sini..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- LKPD 3: PRISMA & LIMAS -->
+                <div class="border-2 border-green-200 rounded-2xl p-6 mb-2">
+                    <h3 class="font-display text-xl text-fun-green mb-2"><i class="fa-solid fa-shapes mr-2"></i>
+                        Kegiatan 3 &mdash; Menyelesaikan Masalah Prisma dan Limas</h3>
+                    <p class="text-gray-700 mb-4"><b>Tujuan:</b> berlatih menyelesaikan soal cerita tentang volume
+                        prisma dan limas dengan langkah yang rapi (diketahui, ditanyakan, jawab, kesimpulan).</p>
+
+                    <div class="bg-green-50 rounded-xl p-4 mb-4">
+                        <p class="text-gray-700 font-bold mb-2">Soal A: Sebuah tenda pramuka berbentuk prisma segitiga
+                            memiliki luas alas 2,4 m&sup2; dan tinggi prisma 2,5 m. Berapa volume udara di dalam tenda
+                            itu?</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                            <textarea
+                                class="w-full border-2 border-green-200 rounded-lg p-2 focus:outline-none focus:border-fun-green"
+                                rows="4" placeholder="Diketahui: ..."></textarea>
+                            <textarea
+                                class="w-full border-2 border-green-200 rounded-lg p-2 focus:outline-none focus:border-fun-green"
+                                rows="4" placeholder="Ditanyakan: ..."></textarea>
+                            <textarea
+                                class="w-full border-2 border-green-200 rounded-lg p-2 focus:outline-none focus:border-fun-green md:col-span-2"
+                                rows="3" placeholder="Jawab: ..."></textarea>
+                            <textarea
+                                class="w-full border-2 border-green-200 rounded-lg p-2 focus:outline-none focus:border-fun-green md:col-span-2"
+                                rows="2" placeholder="Kesimpulan: ..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="bg-yellow-50 rounded-xl p-4">
+                        <p class="text-gray-700 font-bold mb-2">Soal B: Sebuah tumpeng nasi berbentuk limas dengan alas
+                            persegi bersisi 20 cm dan tinggi 15 cm. Berapa volume nasi tumpeng tersebut?</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                            <textarea
+                                class="w-full border-2 border-yellow-200 rounded-lg p-2 focus:outline-none focus:border-yellow-500"
+                                rows="4" placeholder="Diketahui: ..."></textarea>
+                            <textarea
+                                class="w-full border-2 border-yellow-200 rounded-lg p-2 focus:outline-none focus:border-yellow-500"
+                                rows="4" placeholder="Ditanyakan: ..."></textarea>
+                            <textarea
+                                class="w-full border-2 border-yellow-200 rounded-lg p-2 focus:outline-none focus:border-yellow-500 md:col-span-2"
+                                rows="3" placeholder="Jawab: ..."></textarea>
+                            <textarea
+                                class="w-full border-2 border-yellow-200 rounded-lg p-2 focus:outline-none focus:border-yellow-500 md:col-span-2"
+                                rows="2" placeholder="Kesimpulan: ..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-6">
+                        <button onclick="toggleKunciLKPD()" id="btn-kunci-lkpd"
+                            class="print:hidden bg-gray-700 hover:bg-gray-800 text-white font-bold py-2 px-6 rounded-full shadow transition"><i
+                                class="fa-solid fa-key mr-2"></i>Lihat Kunci Soal A & B (cek sendiri setelah
+                            selesai)</button>
+                        <div id="kunci-lkpd"
+                            class="hidden text-left mt-4 bg-gray-50 border-2 border-gray-200 rounded-xl p-4 space-y-4">
+                            <div>
+                                <p class="font-bold text-fun-green">Kunci Soal A:</p>
+                                <p>Diketahui: luas alas = 2,4 m&sup2;, tinggi prisma = 2,5 m</p>
+                                <p>Ditanyakan: volume tenda</p>
+                                <p>Jawab: V = luas alas &times; tinggi = 2,4 &times; 2,5 = 6 m&sup3;</p>
+                                <p>Kesimpulan: Jadi, volume udara di dalam tenda adalah 6 m&sup3;.</p>
+                            </div>
+                            <div>
+                                <p class="font-bold text-yellow-600">Kunci Soal B:</p>
+                                <p>Diketahui: sisi alas (s) = 20 cm, tinggi (t) = 15 cm</p>
+                                <p>Ditanyakan: volume tumpeng</p>
+                                <p>Jawab: Luas alas = s &times; s = 20 &times; 20 = 400 cm&sup2;; V = &frac13; &times;
+                                    400 &times; 15 = &frac13; &times; 6.000 = 2.000 cm&sup3;</p>
+                                <p>Kesimpulan: Jadi, volume nasi tumpeng tersebut adalah 2.000 cm&sup3;.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: LATIHAN -->
+        <section id="latihan" class="section-hidden fade-in">
+            <div class="bg-white rounded-3xl p-6 md:p-8 shadow-lg border-t-8 border-fun-purple">
+                <h2 class="font-display text-3xl text-fun-purple mb-6 text-center"><i
+                        class="fa-solid fa-dumbbell mr-2"></i> Latihan Cerdas</h2>
+                <p class="text-center text-gray-600 mb-8">Ada 15 soal untuk mengasah kemampuanmu. Setelah menjawab, kamu
+                    bisa membuka tombol "Lihat Pembahasan" untuk melihat cara penyelesaiannya langkah demi langkah.</p>
+
+                <div id="quiz-container" class="max-w-2xl mx-auto space-y-6">
+                    <!-- Quiz generated by JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: EVALUASI -->
+        <section id="evaluasi" class="section-hidden fade-in">
+            <div class="bg-white rounded-3xl p-6 md:p-8 shadow-lg border-t-8 border-fun-pink">
+                <h2 class="font-display text-3xl text-fun-pink mb-6 text-center"><i
+                        class="fa-solid fa-star mr-2 text-fun-yellow"></i> Ujian Akhir Petualang</h2>
+
+                <div id="eval-start" class="text-center">
+                    <p class="text-gray-700 text-lg mb-2">Siap untuk mendapatkan Lencana Kehormatan? Ada 15 soal pilihan
+                        ganda tentang kubus, balok, prisma, dan limas.</p>
+                    <p class="text-gray-600 mb-6">Kerjakan dengan mandiri ya, dan setelah selesai kamu bisa mengecek
+                        pembahasan lengkap dari setiap soal.</p>
+                    <button onclick="startEvaluasi()"
+                        class="bg-fun-pink hover:bg-pink-600 text-white font-display text-xl py-3 px-8 rounded-full shadow transition">Mulai
+                        Evaluasi!</button>
+                </div>
+
+                <div id="eval-questions" class="hidden max-w-2xl mx-auto space-y-6">
+                    <!-- Evaluasi generated by JS -->
+                    <div id="eval-form-container"></div>
+                    <button onclick="submitEvaluasi()"
+                        class="w-full bg-fun-green hover:bg-green-600 text-white font-bold py-3 rounded-xl mt-6 transition shadow-md">Selesai
+                        & Cek Nilai</button>
+                </div>
+
+                <div id="eval-result"
+                    class="hidden text-center mt-8 p-8 bg-blue-50 rounded-2xl border-2 border-blue-200">
+                    <h3 class="font-display text-3xl text-fun-blue mb-2">Nilai Kamu:</h3>
+                    <div id="eval-score" class="text-6xl font-display text-fun-orange mb-4">100</div>
+                    <p id="eval-message" class="text-lg text-gray-700 font-bold">Luar biasa! Kamu adalah Master Bangun
+                        Ruang!</p>
+                    <div class="flex flex-col sm:flex-row justify-center gap-3 mt-6">
+                        <button onclick="togglePembahasanEval()" id="btn-pemb-eval"
+                            class="bg-gray-700 hover:bg-gray-800 text-white font-bold py-2 px-6 rounded-full shadow transition">Lihat
+                            Pembahasan Lengkap</button>
+                        <button onclick="nav('refleksi')"
+                            class="bg-fun-blue hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-full shadow transition">Lanjut
+                            ke Refleksi</button>
+                    </div>
+                    <div id="pembahasan-eval" class="hidden text-left mt-6 space-y-4"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: REFLEKSI -->
+        <section id="refleksi" class="section-hidden fade-in">
+            <div class="bg-white rounded-3xl p-8 shadow-lg border-t-8 border-fun-blue text-center">
+                <h2 class="font-display text-3xl text-fun-blue mb-4">Bagaimana Perasaanmu Hari Ini?</h2>
+                <p class="text-gray-600 mb-8">Pilih emoji yang paling menggambarkan perasaanmu setelah belajar bangun
+                    ruang.</p>
+
+                <div class="flex justify-center gap-4 md:gap-8 mb-8">
+                    <button onclick="showRefleksiMsg('Senang sekali! Teruslah semangat belajar!')"
+                        class="text-5xl md:text-6xl hover:scale-125 transition transform duration-200"
+                        title="Senang">🤩</button>
+                    <button onclick="showRefleksiMsg('Bagus! Kamu sudah memahami konsep dasar.')"
+                        class="text-5xl md:text-6xl hover:scale-125 transition transform duration-200"
+                        title="Paham">😊</button>
+                    <button onclick="showRefleksiMsg('Tidak apa-apa! Mari baca ulang materi perlahan-lahan.')"
+                        class="text-5xl md:text-6xl hover:scale-125 transition transform duration-200"
+                        title="Bingung">🤔</button>
+                    <button
+                        onclick="showRefleksiMsg('Jangan menyerah! Matematika itu seperti teka-teki, pasti bisa pecah!')"
+                        class="text-5xl md:text-6xl hover:scale-125 transition transform duration-200"
+                        title="Sulit">🤯</button>
+                </div>
+
+                <div id="refleksi-msg"
+                    class="hidden inline-block px-6 py-3 bg-yellow-100 text-yellow-800 rounded-full font-bold text-lg animate-bounce-slight">
+                    <!-- Message appears here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: GLOSARIUM -->
+        <section id="glosarium" class="section-hidden fade-in">
+            <div class="bg-white rounded-3xl p-6 md:p-8 shadow-lg border-t-8 border-gray-400">
+                <h2 class="font-display text-3xl text-gray-700 mb-6 border-b-2 pb-2"><i
+                        class="fa-solid fa-book mr-2"></i> Kamus Cilik (Glosarium)</h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                        <h4 class="font-bold text-fun-blue text-lg">Bangun Ruang</h4>
+                        <p class="text-gray-600 text-sm">Bangun 3 dimensi yang memiliki ruang (isi) dan dibatasi oleh
+                            sisi-sisi.</p>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                        <h4 class="font-bold text-fun-pink text-lg">Jaring-Jaring</h4>
+                        <p class="text-gray-600 text-sm">Bentangan datar bangun ruang yang diperoleh jika rusuk-rusuknya
+                            dipotong dan direbahkan.</p>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                        <h4 class="font-bold text-fun-green text-lg">Sisi</h4>
+                        <p class="text-gray-600 text-sm">Bidang datar yang membatasi bagian dalam dan luar bangun ruang.
+                        </p>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                        <h4 class="font-bold text-fun-orange text-lg">Rusuk</h4>
+                        <p class="text-gray-600 text-sm">Garis pertemuan antara dua buah sisi pada bangun ruang.</p>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                        <h4 class="font-bold text-fun-purple text-lg">Volume</h4>
+                        <p class="text-gray-600 text-sm">Isi atau banyaknya ruang yang bisa ditempati di dalam suatu
+                            bangun ruang.</p>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                        <h4 class="font-bold text-teal-600 text-lg">Luas Permukaan</h4>
+                        <p class="text-gray-600 text-sm">Jumlah luas seluruh sisi yang membungkus sebuah bangun ruang,
+                            misalnya luas kertas untuk membungkus kado.</p>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                        <h4 class="font-bold text-yellow-600 text-lg">Titik Sudut</h4>
+                        <p class="text-gray-600 text-sm">Titik pertemuan antara tiga rusuk atau lebih pada bangun ruang.
+                        </p>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                        <h4 class="font-bold text-fun-blue text-lg">LKPD</h4>
+                        <p class="text-gray-600 text-sm">Lembar Kerja Peserta Didik, yaitu lembar kegiatan yang
+                            digunakan siswa untuk berlatih dan menemukan konsep secara mandiri.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t py-6 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 text-center text-gray-500 text-sm">
+            &copy; 2026 Petualangan Bangun Ruang - E-Modul RME Kelas V SD. <br>
+            Dibuat untuk pembelajaran matematika yang menyenangkan! <i class="fa-solid fa-heart text-fun-pink"></i>
+        </div>
+    </footer>
+
+    <script>
+        // --- NAVIGATION LOGIC ---
+        const sections = ['beranda', 'petunjuk', 'tujuan', 'materi', 'jaring', 'aktivitas', 'lkpd', 'latihan', 'evaluasi', 'refleksi', 'glosarium'];
+
+        function nav(sectionId) {
+            // Hide all sections
+            sections.forEach(id => {
+                document.getElementById(id).classList.add('section-hidden');
+            });
+            // Show target section
+            const target = document.getElementById(sectionId);
+            target.classList.remove('section-hidden');
+
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            // Initialize Three.js if Materi is opened and not initialized
+            if (sectionId === 'materi' && !isThreeJsInitialized) {
+                initThreeJs();
+            }
+
+            // Initialize Net SVG/Canvases if Jaring is opened and not initialized
+            if (sectionId === 'jaring' && !isNetInitialized) {
+                initNetDrawings();
+            }
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        // --- MATERI TABS LOGIC ---
+        const shapes = ['kubus', 'balok', 'prisma', 'limas'];
+        function showShape(shapeName) {
+            shapes.forEach(shape => {
+                document.getElementById(`content-${shape}`).classList.add('hidden');
+                document.getElementById(`content-${shape}`).classList.remove('block');
+
+                const tab = document.getElementById(`tab-${shape}`);
+                tab.classList.remove('tab-active');
+                tab.classList.add('tab-inactive');
+            });
+
+            document.getElementById(`content-${shapeName}`).classList.remove('hidden');
+            document.getElementById(`content-${shapeName}`).classList.add('block');
+
+            const activeTab = document.getElementById(`tab-${shapeName}`);
+            activeTab.classList.remove('tab-inactive');
+            activeTab.classList.add('tab-active');
+        }
+
+        // --- JARING-JARING TABS LOGIC ---
+        function showNet(shapeName) {
+            shapes.forEach(shape => {
+                const content = document.getElementById(`net-content-${shape}`);
+                if (content) {
+                    content.classList.add('hidden');
+                    content.classList.remove('block');
+                }
+                const tab = document.getElementById(`net-tab-${shape}`);
+                if (tab) {
+                    tab.classList.remove('tab-active');
+                    tab.classList.add('tab-inactive');
+                }
+            });
+
+            const activeContent = document.getElementById(`net-content-${shapeName}`);
+            if (activeContent) {
+                activeContent.classList.remove('hidden');
+                activeContent.classList.add('block');
+            }
+
+            const activeTab = document.getElementById(`net-tab-${shapeName}`);
+            if (activeTab) {
+                activeTab.classList.remove('tab-inactive');
+                activeTab.classList.add('tab-active');
+            }
+        }
+
+        // --- AKTIVITAS RME LOGIC ---
+        function hitungRME() {
+            const p = parseFloat(document.getElementById('rme-p').value);
+            const l = parseFloat(document.getElementById('rme-l').value);
+            const t = parseFloat(document.getElementById('rme-t').value);
+            const box = document.getElementById('rme-hasil');
+
+            if (isNaN(p) || isNaN(l) || isNaN(t)) {
+                box.innerHTML = "Ups! Masukkan semua angkanya dulu ya.";
+                box.className = "mt-4 p-3 bg-red-100 text-red-800 rounded-lg font-bold text-center";
+            } else {
+                const vol = p * l * t;
+                if (p === 10 && l === 5 && t === 8) {
+                    box.innerHTML = `Hebat! Volume kardus = ${p} &times; ${l} &times; ${t} = <b>${vol} cm&sup3;</b>. <br> Budi tidak akan salah beli susu!`;
+                } else {
+                    box.innerHTML = `Volume = ${p} &times; ${l} &times; ${t} = <b>${vol} cm&sup3;</b>.`;
+                }
+                box.className = "mt-4 p-3 bg-green-100 text-green-800 rounded-lg font-bold text-center text-lg animate-bounce-slight";
+            }
+            box.classList.remove('hidden');
+        }
+
+        // --- REFLEKSI LOGIC ---
+        function showRefleksiMsg(msg) {
+            const box = document.getElementById('refleksi-msg');
+            box.innerHTML = msg;
+            box.classList.remove('hidden');
+        }
+
+        // --- LKPD LOGIC ---
+        function toggleKunciLKPD() {
+            const box = document.getElementById('kunci-lkpd');
+            const btn = document.getElementById('btn-kunci-lkpd');
+            box.classList.toggle('hidden');
+            btn.innerHTML = box.classList.contains('hidden')
+                ? '<i class="fa-solid fa-key mr-2"></i>Lihat Kunci Soal A & B (cek sendiri setelah selesai)'
+                : '<i class="fa-solid fa-eye-slash mr-2"></i>Sembunyikan Kunci';
+        }
+
+        // --- LATIHAN (QUIZ) LOGIC ---
+        const latihanQuestions = [
+            {
+                q: "1. Sebuah kotak mainan berbentuk kubus memiliki panjang rusuk 6 cm. Berapa volume kotak mainan tersebut?",
+                options: ["36 cm&sup3;", "64 cm&sup3;", "216 cm&sup3;", "316 cm&sup3;"],
+                answer: 2,
+                pembahasan: "<b>Diketahui:</b> rusuk kubus (s) = 6 cm<br><b>Ditanyakan:</b> volume (V)<br><b>Jawab:</b> V = s&sup3; = 6 &times; 6 &times; 6 = 216 cm&sup3;<br><b>Kesimpulan:</b> Jadi, volume kotak mainan tersebut adalah 216 cm&sup3;."
+            },
+            {
+                q: "2. Sebuah kardus mi instan berbentuk balok memiliki panjang 8 cm, lebar 4 cm, dan tinggi 5 cm. Berapa volumenya?",
+                options: ["120 cm&sup3;", "140 cm&sup3;", "160 cm&sup3;", "180 cm&sup3;"],
+                answer: 2,
+                pembahasan: "<b>Diketahui:</b> p = 8 cm, l = 4 cm, t = 5 cm<br><b>Ditanyakan:</b> volume (V)<br><b>Jawab:</b> V = p &times; l &times; t = 8 &times; 4 &times; 5 = 160 cm&sup3;<br><b>Kesimpulan:</b> Jadi, volume kardus mi instan tersebut adalah 160 cm&sup3;."
+            },
+            {
+                q: "3. Tenda regu Pramuka berbentuk prisma segitiga dengan luas alas 12 cm&sup2; dan tinggi prisma 10 cm. Berapa volumenya?",
+                options: ["100 cm&sup3;", "110 cm&sup3;", "120 cm&sup3;", "130 cm&sup3;"],
+                answer: 2,
+                pembahasan: "<b>Diketahui:</b> luas alas = 12 cm&sup2;, tinggi prisma = 10 cm<br><b>Ditanyakan:</b> volume (V) tenda<br><b>Jawab:</b> V = luas alas &times; tinggi = 12 &times; 10 = 120 cm&sup3;<br><b>Kesimpulan:</b> Jadi, volume tenda tersebut adalah 120 cm&sup3;."
+            },
+            {
+                q: "4. Sebuah limas memiliki luas alas 30 cm&sup2; dan tinggi 9 cm. Berapa volume limas tersebut?",
+                options: ["60 cm&sup3;", "80 cm&sup3;", "90 cm&sup3;", "100 cm&sup3;"],
+                answer: 2,
+                pembahasan: "<b>Diketahui:</b> luas alas = 30 cm&sup2;, tinggi = 9 cm<br><b>Ditanyakan:</b> volume (V) limas<br><b>Jawab:</b> V = &frac13; &times; luas alas &times; tinggi = &frac13; &times; 30 &times; 9 = &frac13; &times; 270 = 90 cm&sup3;<br><b>Kesimpulan:</b> Jadi, volume limas tersebut adalah 90 cm&sup3;."
+            },
+            {
+                q: "5. Sebuah dadu besar berbentuk kubus memiliki rusuk 7 cm. Berapa luas permukaan dadu tersebut?",
+                options: ["252 cm&sup2;", "280 cm&sup2;", "294 cm&sup2;", "300 cm&sup2;"],
+                answer: 2,
+                pembahasan: "<b>Diketahui:</b> rusuk kubus (s) = 7 cm<br><b>Ditanyakan:</b> luas permukaan (L)<br><b>Jawab:</b> L = 6s&sup2; = 6 &times; (7 &times; 7) = 6 &times; 49 = 294 cm&sup2;<br><b>Kesimpulan:</b> Jadi, luas permukaan dadu tersebut adalah 294 cm&sup2;."
+            },
+            {
+                q: "6. Sebuah kotak sepatu berbentuk balok berukuran panjang 10 cm, lebar 6 cm, dan tinggi 4 cm. Berapa luas permukaan kotak sepatu itu?",
+                options: ["228 cm&sup2;", "238 cm&sup2;", "248 cm&sup2;", "258 cm&sup2;"],
+                answer: 2,
+                pembahasan: "<b>Diketahui:</b> p = 10 cm, l = 6 cm, t = 4 cm<br><b>Ditanyakan:</b> luas permukaan (L)<br><b>Jawab:</b> L = 2 &times; (p&times;l + p&times;t + l&times;t) = 2 &times; (60 + 40 + 24) = 2 &times; 124 = 248 cm&sup2;<br><b>Kesimpulan:</b> Jadi, luas permukaan kotak sepatu tersebut adalah 248 cm&sup2;."
+            },
+            {
+                q: "7. Jaring-jaring yang tersusun dari 6 buah persegi yang kongruen (sama besar) merupakan jaring-jaring bangun...",
+                options: ["Balok", "Kubus", "Prisma", "Limas"],
+                answer: 1,
+                pembahasan: "<b>Penjelasan:</b> kubus tersusun dari 6 sisi berbentuk persegi yang ukurannya sama persis, sehingga jaring-jaringnya juga terdiri dari 6 persegi yang kongruen.<br><b>Kesimpulan:</b> Jadi, jawabannya adalah kubus."
+            },
+            {
+                q: "8. Bangun ruang yang memiliki sepasang sisi alas dan tutup berbentuk segitiga yang sama besar, serta sisi tegaknya berbentuk persegi panjang, disebut...",
+                options: ["Limas segitiga", "Balok", "Prisma segitiga", "Kubus"],
+                answer: 2,
+                pembahasan: "<b>Penjelasan:</b> ciri khas prisma adalah memiliki dua sisi sejajar (alas dan tutup) yang bentuk dan ukurannya sama, dihubungkan oleh sisi tegak. Jika alasnya segitiga, maka disebut prisma segitiga.<br><b>Kesimpulan:</b> Jadi, jawabannya adalah prisma segitiga."
+            },
+            {
+                q: "9. Sebuah limas segiempat memiliki berapa titik sudut?",
+                options: ["4", "5", "6", "8"],
+                answer: 1,
+                pembahasan: "<b>Penjelasan:</b> limas segiempat memiliki 4 titik sudut pada alasnya ditambah 1 titik puncak, sehingga totalnya 5 titik sudut.<br><b>Kesimpulan:</b> Jadi, jawabannya adalah 5 titik sudut."
+            },
+            {
+                q: "10. Sebuah balok memiliki berapa buah rusuk?",
+                options: ["6", "8", "10", "12"],
+                answer: 3,
+                pembahasan: "<b>Penjelasan:</b> balok memiliki 12 rusuk, yaitu 4 rusuk sejajar untuk masing-masing arah panjang, lebar, dan tinggi.<br><b>Kesimpulan:</b> Jadi, jawabannya adalah 12 rusuk."
+            },
+            {
+                q: "11. Bunda hendak membungkus kado ulang tahun berbentuk kubus dengan panjang rusuk 15 cm menggunakan kertas kado. Berapa cm&sup2; kertas kado paling sedikit yang dibutuhkan agar seluruh permukaan kado tertutup?",
+                options: ["1.200 cm&sup2;", "1.250 cm&sup2;", "1.350 cm&sup2;", "1.400 cm&sup2;"],
+                answer: 2,
+                pembahasan: "<b>Diketahui:</b> rusuk kubus (s) = 15 cm<br><b>Ditanyakan:</b> luas kertas kado minimal (L)<br><b>Jawab:</b> L = 6s&sup2; = 6 &times; (15 &times; 15) = 6 &times; 225 = 1.350 cm&sup2;<br><b>Kesimpulan:</b> Jadi, kertas kado yang dibutuhkan Bunda paling sedikit 1.350 cm&sup2;."
+            },
+            {
+                q: "12. Pak Made membuat kolam ikan berbentuk balok berukuran panjang 2 m, lebar 1,5 m, dan tinggi 1 m. Jika 1 m&sup3; = 1.000 liter, berapa liter air maksimal yang bisa ditampung kolam tersebut?",
+                options: ["2.000 liter", "2.500 liter", "3.000 liter", "3.500 liter"],
+                answer: 2,
+                pembahasan: "<b>Diketahui:</b> p = 2 m, l = 1,5 m, t = 1 m<br><b>Ditanyakan:</b> volume air maksimal dalam liter<br><b>Jawab:</b> V = p &times; l &times; t = 2 &times; 1,5 &times; 1 = 3 m&sup3; = 3 &times; 1.000 = 3.000 liter<br><b>Kesimpulan:</b> Jadi, kolam Pak Made mampu menampung air paling banyak 3.000 liter."
+            },
+            {
+                q: "13. Sebuah miniatur piramida (limas segiempat) memiliki alas berbentuk persegi dengan sisi 6 cm dan tinggi 10 cm. Berapa volume miniatur tersebut?",
+                options: ["100 cm&sup3;", "110 cm&sup3;", "120 cm&sup3;", "130 cm&sup3;"],
+                answer: 2,
+                pembahasan: "<b>Diketahui:</b> sisi alas (s) = 6 cm, tinggi (t) = 10 cm<br><b>Ditanyakan:</b> volume (V) miniatur piramida<br><b>Jawab:</b> Luas alas = 6 &times; 6 = 36 cm&sup2;; V = &frac13; &times; 36 &times; 10 = &frac13; &times; 360 = 120 cm&sup3;<br><b>Kesimpulan:</b> Jadi, volume miniatur piramida tersebut adalah 120 cm&sup3;."
+            },
+            {
+                q: "14. Sebuah prisma segitiga memiliki alas berbentuk segitiga siku-siku dengan panjang kaki 6 cm dan 8 cm, serta tinggi prisma 10 cm. Berapa volume prisma tersebut?",
+                options: ["220 cm&sup3;", "230 cm&sup3;", "240 cm&sup3;", "250 cm&sup3;"],
+                answer: 2,
+                pembahasan: "<b>Diketahui:</b> kaki segitiga = 6 cm dan 8 cm, tinggi prisma = 10 cm<br><b>Ditanyakan:</b> volume (V) prisma<br><b>Jawab:</b> Luas alas = &frac12; &times; 6 &times; 8 = 24 cm&sup2;; V = 24 &times; 10 = 240 cm&sup3;<br><b>Kesimpulan:</b> Jadi, volume prisma tersebut adalah 240 cm&sup3;."
+            },
+            {
+                q: "15. Sebuah kardus balok memiliki volume 240 cm&sup3;. Jika panjangnya 10 cm dan lebarnya 6 cm, berapa tinggi kardus tersebut?",
+                options: ["3 cm", "4 cm", "5 cm", "6 cm"],
+                answer: 1,
+                pembahasan: "<b>Diketahui:</b> volume (V) = 240 cm&sup3;, p = 10 cm, l = 6 cm<br><b>Ditanyakan:</b> tinggi (t) kardus<br><b>Jawab:</b> t = V &divide; (p &times; l) = 240 &divide; (10 &times; 6) = 240 &divide; 60 = 4 cm<br><b>Kesimpulan:</b> Jadi, tinggi kardus tersebut adalah 4 cm."
+            }
+        ];
+
+        function renderLatihan() {
+            const container = document.getElementById('quiz-container');
+            let html = '';
+
+            latihanQuestions.forEach((item, index) => {
+                html += `
+                <div class="bg-gray-50 border border-gray-200 p-5 rounded-2xl mb-4">
+                    <p class="font-bold text-gray-800 mb-4">${item.q}</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        ${item.options.map((opt, i) => `
+                            <button onclick="checkLatihan(${index}, ${i})" class="text-left bg-white border-2 border-purple-100 hover:border-fun-purple hover:bg-purple-50 px-4 py-2 rounded-xl transition">
+                                ${String.fromCharCode(65 + i)}. ${opt}
+                            </button>
+                        `).join('')}
+                    </div>
+                    <div id="feed-l${index}" class="hidden mt-3 text-sm font-bold p-2 rounded-lg"></div>
+                    <button onclick="togglePembahasanLatihan(${index})" id="btn-pemb-l${index}" class="hidden mt-2 text-xs font-bold text-fun-purple underline">Lihat Pembahasan</button>
+                    <div id="pemb-l${index}" class="hidden mt-2 text-sm bg-purple-50 border border-purple-200 rounded-lg p-3 text-gray-700 leading-relaxed"></div>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        function checkLatihan(qIndex, selectedIndex) {
+            const q = latihanQuestions[qIndex];
+            const feedback = document.getElementById(`feed-l${qIndex}`);
+            feedback.classList.remove('hidden', 'bg-green-100', 'text-green-700', 'bg-red-100', 'text-red-700');
+
+            if (q.answer === selectedIndex) {
+                feedback.innerHTML = '<i class="fa-solid fa-check-circle mr-1"></i> Benar! Kamu pintar!';
+                feedback.classList.add('bg-green-100', 'text-green-700');
+            } else {
+                feedback.innerHTML = '<i class="fa-solid fa-times-circle mr-1"></i> Kurang tepat, ayo coba lagi!';
+                feedback.classList.add('bg-red-100', 'text-red-700');
+            }
+
+            document.getElementById(`btn-pemb-l${qIndex}`).classList.remove('hidden');
+        }
+
+        function togglePembahasanLatihan(qIndex) {
+            const box = document.getElementById(`pemb-l${qIndex}`);
+            const btn = document.getElementById(`btn-pemb-l${qIndex}`);
+            const q = latihanQuestions[qIndex];
+            if (box.classList.contains('hidden')) {
+                box.innerHTML = q.pembahasan;
+                box.classList.remove('hidden');
+                btn.innerText = 'Sembunyikan Pembahasan';
+            } else {
+                box.classList.add('hidden');
+                btn.innerText = 'Lihat Pembahasan';
+            }
+        }
+
+        // --- EVALUASI LOGIC ---
+        const evalQuestions = [
+            {
+                q: "Bangun ruang yang memiliki 6 sisi berbentuk persegi yang sama besar disebut...", options: ["Balok", "Kubus", "Prisma", "Limas"], ans: 1,
+                pembahasan: "<b>Penjelasan:</b> kubus memiliki 6 sisi berbentuk persegi yang seluruhnya sama besar (kongruen).<br><b>Kesimpulan:</b> Jawaban yang benar adalah kubus."
+            },
+            {
+                q: "Rumus volume balok adalah...", options: ["s &times; s &times; s", "p &times; l &times; t", "&frac13; &times; Luas Alas &times; t", "Luas Alas &times; t"], ans: 1,
+                pembahasan: "<b>Penjelasan:</b> volume balok dihitung dengan mengalikan panjang, lebar, dan tingginya.<br><b>Kesimpulan:</b> Jawaban yang benar adalah p &times; l &times; t."
+            },
+            {
+                q: "Jaring-jaring limas segiempat terdiri dari 1 alas segiempat dan...", options: ["3 segitiga", "4 segitiga", "5 segitiga", "4 persegi panjang"], ans: 1,
+                pembahasan: "<b>Penjelasan:</b> limas segiempat memiliki 4 sisi tegak berbentuk segitiga yang mengelilingi alasnya dan bertemu di satu titik puncak.<br><b>Kesimpulan:</b> Jawaban yang benar adalah 4 segitiga."
+            },
+            {
+                q: "Sebuah rubik berbentuk kubus memiliki panjang rusuk 3 cm. Berapa volumenya?", options: ["9 cm&sup3;", "18 cm&sup3;", "27 cm&sup3;", "30 cm&sup3;"], ans: 2,
+                pembahasan: "<b>Diketahui:</b> s = 3 cm<br><b>Ditanyakan:</b> volume (V)<br><b>Jawab:</b> V = s&sup3; = 3 &times; 3 &times; 3 = 27 cm&sup3;<br><b>Kesimpulan:</b> Jadi, volume rubik tersebut adalah 27 cm&sup3;."
+            },
+            {
+                q: "Benda manakah yang berbentuk limas?", options: ["Dadu", "Kotak Sepatu", "Tenda", "Piramida Mesir"], ans: 3,
+                pembahasan: "<b>Penjelasan:</b> piramida Mesir memiliki alas persegi dengan sisi-sisi tegak berbentuk segitiga yang meruncing ke satu titik puncak, sesuai ciri limas.<br><b>Kesimpulan:</b> Jawaban yang benar adalah Piramida Mesir."
+            },
+            {
+                q: "Sebuah kotak susu berbentuk balok berukuran panjang 12 cm, lebar 6 cm, dan tinggi 8 cm. Berapa volumenya?", options: ["486 cm&sup3;", "556 cm&sup3;", "576 cm&sup3;", "596 cm&sup3;"], ans: 2,
+                pembahasan: "<b>Diketahui:</b> p = 12 cm, l = 6 cm, t = 8 cm<br><b>Ditanyakan:</b> volume (V)<br><b>Jawab:</b> V = p &times; l &times; t = 12 &times; 6 &times; 8 = 576 cm&sup3;<br><b>Kesimpulan:</b> Jadi, volume kotak susu tersebut adalah 576 cm&sup3;."
+            },
+            {
+                q: "Sebuah kubus memiliki luas permukaan 150 cm&sup2;. Berapa panjang rusuknya?", options: ["4 cm", "5 cm", "6 cm", "25 cm"], ans: 1,
+                pembahasan: "<b>Diketahui:</b> L = 150 cm&sup2;<br><b>Ditanyakan:</b> panjang rusuk (s)<br><b>Jawab:</b> s&sup2; = L &divide; 6 = 150 &divide; 6 = 25, sehingga s = &radic;25 = 5 cm<br><b>Kesimpulan:</b> Jadi, panjang rusuk kubus tersebut adalah 5 cm."
+            },
+            {
+                q: "Sebuah balok berukuran panjang 9 cm, lebar 5 cm, dan tinggi 4 cm. Berapa luas permukaannya?", options: ["192 cm&sup2;", "202 cm&sup2;", "212 cm&sup2;", "222 cm&sup2;"], ans: 1,
+                pembahasan: "<b>Diketahui:</b> p = 9 cm, l = 5 cm, t = 4 cm<br><b>Ditanyakan:</b> luas permukaan (L)<br><b>Jawab:</b> L = 2 &times; (p&times;l + p&times;t + l&times;t) = 2 &times; (45+36+20) = 2 &times; 101 = 202 cm&sup2;<br><b>Kesimpulan:</b> Jadi, luas permukaan balok tersebut adalah 202 cm&sup2;."
+            },
+            {
+                q: "Sebuah prisma segitiga memiliki luas alas 18 cm&sup2; dan volume 180 cm&sup3;. Berapa tinggi prisma tersebut?", options: ["8 cm", "9 cm", "10 cm", "12 cm"], ans: 2,
+                pembahasan: "<b>Diketahui:</b> luas alas = 18 cm&sup2;, volume (V) = 180 cm&sup3;<br><b>Ditanyakan:</b> tinggi prisma (t)<br><b>Jawab:</b> t = V &divide; luas alas = 180 &divide; 18 = 10 cm<br><b>Kesimpulan:</b> Jadi, tinggi prisma tersebut adalah 10 cm."
+            },
+            {
+                q: "Sebuah limas memiliki volume 96 cm&sup3; dan luas alas 24 cm&sup2;. Berapa tinggi limas tersebut?", options: ["8 cm", "10 cm", "12 cm", "14 cm"], ans: 2,
+                pembahasan: "<b>Diketahui:</b> V = 96 cm&sup3;, luas alas = 24 cm&sup2;<br><b>Ditanyakan:</b> tinggi limas (t)<br><b>Jawab:</b> t = (3 &times; V) &divide; luas alas = (3 &times; 96) &divide; 24 = 288 &divide; 24 = 12 cm<br><b>Kesimpulan:</b> Jadi, tinggi limas tersebut adalah 12 cm."
+            },
+            {
+                q: "Banyaknya sisi pada bangun ruang prisma segitiga adalah...", options: ["4", "5", "6", "9"], ans: 1,
+                pembahasan: "<b>Penjelasan:</b> prisma segitiga memiliki 2 sisi segitiga (alas dan tutup) serta 3 sisi persegi panjang, sehingga totalnya 5 sisi.<br><b>Kesimpulan:</b> Jawaban yang benar adalah 5."
+            },
+            {
+                q: "Sebuah kado berbentuk kubus dengan rusuk 20 cm akan dibungkus kertas kado secara penuh. Berapa cm&sup2; kertas kado yang dibutuhkan?", options: ["2.200 cm&sup2;", "2.300 cm&sup2;", "2.400 cm&sup2;", "2.500 cm&sup2;"], ans: 2,
+                pembahasan: "<b>Diketahui:</b> s = 20 cm<br><b>Ditanyakan:</b> luas kertas kado (L)<br><b>Jawab:</b> L = 6s&sup2; = 6 &times; (20 &times; 20) = 6 &times; 400 = 2.400 cm&sup2;<br><b>Kesimpulan:</b> Jadi, kertas kado yang dibutuhkan adalah 2.400 cm&sup2;."
+            },
+            {
+                q: "Tono mengisi bak mandi berbentuk balok dengan panjang 80 cm, lebar 50 cm, dan tinggi air 40 cm. Jika 1.000 cm&sup3; = 1 liter, berapa liter air di bak tersebut?", options: ["140 liter", "150 liter", "160 liter", "170 liter"], ans: 2,
+                pembahasan: "<b>Diketahui:</b> p = 80 cm, l = 50 cm, t = 40 cm<br><b>Ditanyakan:</b> volume air dalam liter<br><b>Jawab:</b> V = 80 &times; 50 &times; 40 = 160.000 cm&sup3; = 160.000 &divide; 1.000 = 160 liter<br><b>Kesimpulan:</b> Jadi, air dalam bak mandi Tono sebanyak 160 liter."
+            },
+            {
+                q: "Jaring-jaring yang terdiri dari 2 buah segitiga dan 3 buah persegi panjang adalah jaring-jaring...", options: ["Kubus", "Balok", "Prisma segitiga", "Limas segiempat"], ans: 2,
+                pembahasan: "<b>Penjelasan:</b> prisma segitiga tersusun dari 2 sisi segitiga (alas dan tutup) dan 3 sisi persegi panjang di sekelilingnya.<br><b>Kesimpulan:</b> Jawaban yang benar adalah prisma segitiga."
+            },
+            {
+                q: "Sebuah piramida mainan berbentuk limas segiempat memiliki alas persegi bersisi 8 cm dan tinggi 15 cm. Berapa volumenya?", options: ["300 cm&sup3;", "310 cm&sup3;", "320 cm&sup3;", "330 cm&sup3;"], ans: 2,
+                pembahasan: "<b>Diketahui:</b> sisi alas (s) = 8 cm, tinggi (t) = 15 cm<br><b>Ditanyakan:</b> volume (V)<br><b>Jawab:</b> Luas alas = 8 &times; 8 = 64 cm&sup2;; V = &frac13; &times; 64 &times; 15 = &frac13; &times; 960 = 320 cm&sup3;<br><b>Kesimpulan:</b> Jadi, volume piramida mainan tersebut adalah 320 cm&sup3;."
+            }
+        ];
+
+        let evalSelections = new Array(evalQuestions.length).fill(null);
+
+        function startEvaluasi() {
+            document.getElementById('eval-start').classList.add('hidden');
+            document.getElementById('eval-questions').classList.remove('hidden');
+            renderEvaluasi();
+        }
+
+        function renderEvaluasi() {
+            const container = document.getElementById('eval-form-container');
+            let html = '';
+            evalQuestions.forEach((item, index) => {
+                html += `
+                <div class="bg-gray-50 border border-pink-100 p-5 rounded-2xl mb-4">
+                    <p class="font-bold text-gray-800 mb-3">${index + 1}. ${item.q}</p>
+                    <div class="flex flex-col space-y-2">
+                        ${item.options.map((opt, i) => `
+                            <label class="flex items-center space-x-3 cursor-pointer p-2 rounded hover:bg-pink-50 transition">
+                                <input type="radio" name="q${index}" value="${i}" onchange="evalSelections[${index}]=${i}" class="w-4 h-4 text-fun-pink focus:ring-fun-pink">
+                                <span class="text-gray-700">${opt}</span>
+                            </label>
+                        `).join('')}
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        function submitEvaluasi() {
+            if (evalSelections.includes(null)) {
+                const btn = document.querySelector('#eval-questions button');
+                const origText = btn.innerText;
+                btn.innerText = "Jawab semua soal dulu ya!";
+                btn.classList.replace('bg-fun-green', 'bg-red-500');
+                setTimeout(() => {
+                    btn.innerText = origText;
+                    btn.classList.replace('bg-red-500', 'bg-fun-green');
+                }, 2000);
+                return;
+            }
+
+            let correct = 0;
+            evalSelections.forEach((sel, i) => {
+                if (sel === evalQuestions[i].ans) correct++;
+            });
+            const score = Math.round((correct / evalQuestions.length) * 100);
+
+            document.getElementById('eval-questions').classList.add('hidden');
+            const resultBox = document.getElementById('eval-result');
+            const scoreText = document.getElementById('eval-score');
+            const msgText = document.getElementById('eval-message');
+
+            resultBox.classList.remove('hidden');
+            scoreText.innerText = score;
+
+            if (score === 100) {
+                msgText.innerText = `Sempurna! ${correct} dari ${evalQuestions.length} soal kamu jawab benar semua. Kamu adalah Master Bangun Ruang!`;
+                scoreText.className = "text-6xl font-display text-fun-green mb-4";
+            } else if (score >= 60) {
+                msgText.innerText = `Bagus sekali! ${correct} dari ${evalQuestions.length} soal kamu jawab dengan benar. Sedikit lagi mencapai sempurna.`;
+                scoreText.className = "text-6xl font-display text-fun-blue mb-4";
+            } else {
+                msgText.innerText = `${correct} dari ${evalQuestions.length} soal kamu jawab dengan benar. Jangan menyerah, ayo pelajari lagi materinya!`;
+                scoreText.className = "text-6xl font-display text-fun-orange mb-4";
+            }
+
+            document.getElementById('pembahasan-eval').classList.add('hidden');
+            document.getElementById('btn-pemb-eval').innerText = 'Lihat Pembahasan Lengkap';
+        }
+
+        function togglePembahasanEval() {
+            const box = document.getElementById('pembahasan-eval');
+            const btn = document.getElementById('btn-pemb-eval');
+
+            if (box.classList.contains('hidden')) {
+                let html = '';
+                evalQuestions.forEach((item, i) => {
+                    const benar = evalSelections[i] === item.ans;
+                    html += `
+                    <div class="bg-white border-2 ${benar ? 'border-green-200' : 'border-red-200'} rounded-xl p-4">
+                        <p class="font-bold text-gray-800 mb-1">${i + 1}. ${item.q}</p>
+                        <p class="text-sm mb-2 ${benar ? 'text-green-700' : 'text-red-600'}">
+                            <i class="fa-solid ${benar ? 'fa-check-circle' : 'fa-times-circle'} mr-1"></i>
+                            Jawabanmu: ${item.options[evalSelections[i]]}
+                            ${benar ? '(Sudah tepat)' : `(Kurang tepat, jawaban yang benar: ${item.options[item.ans]})`}
+                        </p>
+                        <div class="text-sm text-gray-700 bg-blue-50 rounded-lg p-3">${item.pembahasan}</div>
+                    </div>`;
+                });
+                box.innerHTML = html;
+                box.classList.remove('hidden');
+                btn.innerText = 'Sembunyikan Pembahasan';
+            } else {
+                box.classList.add('hidden');
+                btn.innerText = 'Lihat Pembahasan Lengkap';
+            }
+        }
+
+        // --- DRAWING 2D JARING-JARING NETS VIA SVG ---
+        let isNetInitialized = false;
+
+        function initNetDrawings() {
+            drawKubusNet('net-canvas-kubus');
+            drawBalokNet('net-canvas-balok');
+            drawPrismaNet('net-canvas-prisma');
+            drawLimasNet('net-canvas-limas');
+            isNetInitialized = true;
+        }
+
+        function drawKubusNet(containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            container.innerHTML = `
+                <svg viewBox="0 0 300 220" class="w-full h-full">
+                    <!-- Cross pattern of 6 squares -->
+                    <rect x="120" y="20" width="50" height="50" fill="#FFD166" stroke="#b45309" stroke-width="3" rx="4"/>
+                    <rect x="70" y="70" width="50" height="50" fill="#FFD166" stroke="#b45309" stroke-width="3" rx="4"/>
+                    <rect x="120" y="70" width="50" height="50" fill="#F59E0B" stroke="#b45309" stroke-width="3" rx="4"/>
+                    <rect x="170" y="70" width="50" height="50" fill="#FFD166" stroke="#b45309" stroke-width="3" rx="4"/>
+                    <rect x="120" y="120" width="50" height="50" fill="#FFD166" stroke="#b45309" stroke-width="3" rx="4"/>
+                    <rect x="120" y="170" width="50" height="50" fill="#FFD166" stroke="#b45309" stroke-width="3" rx="4"/>
+                    <text x="145" y="100" text-anchor="middle" font-weight="bold" fill="#78350f" font-size="14">Alas</text>
+                </svg>
+            `;
+        }
+
+        function drawBalokNet(containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            container.innerHTML = `
+                <svg viewBox="0 0 300 220" class="w-full h-full">
+                    <rect x="110" y="20" width="70" height="40" fill="#93C5FD" stroke="#1d4ed8" stroke-width="3" rx="4"/>
+                    <rect x="60" y="60" width="50" height="70" fill="#93C5FD" stroke="#1d4ed8" stroke-width="3" rx="4"/>
+                    <rect x="110" y="60" width="70" height="70" fill="#3B82F6" stroke="#1d4ed8" stroke-width="3" rx="4"/>
+                    <rect x="180" y="60" width="50" height="70" fill="#93C5FD" stroke="#1d4ed8" stroke-width="3" rx="4"/>
+                    <rect x="110" y="130" width="70" height="40" fill="#93C5FD" stroke="#1d4ed8" stroke-width="3" rx="4"/>
+                    <rect x="110" y="170" width="70" height="30" fill="#93C5FD" stroke="#1d4ed8" stroke-width="3" rx="4"/>
+                    <text x="145" y="100" text-anchor="middle" font-weight="bold" fill="#1e3a8a" font-size="14">Utama</text>
+                </svg>
+            `;
+        }
+
+        function drawPrismaNet(containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            container.innerHTML = `
+                <svg viewBox="0 0 300 220" class="w-full h-full">
+                    <!-- 3 rectangles in center -->
+                    <rect x="80" y="70" width="50" height="80" fill="#86EFAC" stroke="#15803d" stroke-width="3" rx="4"/>
+                    <rect x="130" y="70" width="50" height="80" fill="#22C55E" stroke="#15803d" stroke-width="3" rx="4"/>
+                    <rect x="180" y="70" width="50" height="80" fill="#86EFAC" stroke="#15803d" stroke-width="3" rx="4"/>
+                    <!-- Top triangle -->
+                    <polygon points="155,20 130,70 180,70" fill="#86EFAC" stroke="#15803d" stroke-width="3"/>
+                    <!-- Bottom triangle -->
+                    <polygon points="155,200 130,150 180,150" fill="#86EFAC" stroke="#15803d" stroke-width="3"/>
+                </svg>
+            `;
+        }
+
+        function drawLimasNet(containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            container.innerHTML = `
+                <svg viewBox="0 0 300 220" class="w-full h-full">
+                    <!-- Central square base -->
+                    <rect x="115" y="85" width="70" height="70" fill="#F472B6" stroke="#be185d" stroke-width="3" rx="4"/>
+                    <!-- Top triangle -->
+                    <polygon points="150,20 115,85 185,85" fill="#FBCFE8" stroke="#be185d" stroke-width="3"/>
+                    <!-- Bottom triangle -->
+                    <polygon points="150,200 115,155 185,155" fill="#FBCFE8" stroke="#be185d" stroke-width="3"/>
+                    <!-- Left triangle -->
+                    <polygon points="50,120 115,85 115,155" fill="#FBCFE8" stroke="#be185d" stroke-width="3"/>
+                    <!-- Right triangle -->
+                    <polygon points="250,120 185,85 185,155" fill="#FBCFE8" stroke="#be185d" stroke-width="3"/>
+                    <text x="150" y="125" text-anchor="middle" font-weight="bold" fill="#831843" font-size="13">Alas</text>
+                </svg>
+            `;
+        }
+
+        // --- THREE.JS INTERACTIVE 3D MODELS ---
+        let isThreeJsInitialized = false;
+
+        function initThreeJs() {
+            create3DModel('canvas-kubus', 'kubus', 0x45B7D1);
+            create3DModel('canvas-balok', 'balok', 0xFF8A65);
+            create3DModel('canvas-prisma', 'prisma', 0xEF476F);
+            create3DModel('canvas-limas', 'limas', 0xFFD166);
+            isThreeJsInitialized = true;
+        }
+
+        function create3DModel(containerId, type, hexColor) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+
+            container.innerHTML = '';
+
+            const scene = new THREE.Scene();
+            scene.background = null;
+
+            const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
+            camera.position.z = 5;
+
+            const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            container.appendChild(renderer.domElement);
+
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+
+            const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            dirLight.position.set(5, 5, 5);
+            scene.add(dirLight);
+
+            let geometry;
+            if (type === 'kubus') {
+                geometry = new THREE.BoxGeometry(2, 2, 2);
+            } else if (type === 'balok') {
+                geometry = new THREE.BoxGeometry(2.5, 1.5, 1.5);
+            } else if (type === 'prisma') {
+                geometry = new THREE.CylinderGeometry(1.2, 1.2, 2, 3);
+            } else if (type === 'limas') {
+                geometry = new THREE.CylinderGeometry(0, 1.5, 2, 4);
+            }
+
+            const edges = new THREE.EdgesGeometry(geometry);
+            const lineMaterial = new THREE.LineBasicMaterial({ color: 0x333333, linewidth: 2 });
+            const lineSegments = new THREE.LineSegments(edges, lineMaterial);
+
+            const material = new THREE.MeshLambertMaterial({
+                color: hexColor,
+                polygonOffset: true,
+                polygonOffsetFactor: 1,
+                polygonOffsetUnits: 1
+            });
+            const mesh = new THREE.Mesh(geometry, material);
+
+            const group = new THREE.Group();
+            group.add(mesh);
+            group.add(lineSegments);
+
+            if (type === 'prisma') {
+                group.rotation.x = Math.PI / 2;
+                group.rotation.z = Math.PI / 2;
+            } else if (type === 'limas') {
+                group.rotation.y = Math.PI / 4;
+            } else {
+                group.rotation.x = 0.5;
+                group.rotation.y = 0.5;
+            }
+
+            scene.add(group);
+
+            let isDragging = false;
+            let previousMousePosition = { x: 0, y: 0 };
+
+            container.addEventListener('mousedown', (e) => { isDragging = true; });
+            container.addEventListener('mousemove', (e) => {
+                if (isDragging) {
+                    const deltaMove = {
+                        x: e.offsetX - previousMousePosition.x,
+                        y: e.offsetY - previousMousePosition.y
+                    };
+                    group.rotation.y += deltaMove.x * 0.01;
+                    group.rotation.x += deltaMove.y * 0.01;
+                }
+                previousMousePosition = { x: e.offsetX, y: e.offsetY };
+            });
+            window.addEventListener('mouseup', () => { isDragging = false; });
+
+            container.addEventListener('touchstart', (e) => {
+                isDragging = true;
+                previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+            });
+            container.addEventListener('touchmove', (e) => {
+                if (isDragging) {
+                    const deltaMove = {
+                        x: e.touches[0].clientX - previousMousePosition.x,
+                        y: e.touches[0].clientY - previousMousePosition.y
+                    };
+                    group.rotation.y += deltaMove.x * 0.01;
+                    group.rotation.x += deltaMove.y * 0.01;
+                    previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+                }
+                e.preventDefault();
+            }, { passive: false });
+            window.addEventListener('touchend', () => { isDragging = false; });
+
+            const resizeObserver = new ResizeObserver(entries => {
+                for (let entry of entries) {
+                    const width = entry.contentRect.width;
+                    const height = entry.contentRect.height;
+                    renderer.setSize(width, height);
+                    camera.aspect = width / height;
+                    camera.updateProjectionMatrix();
+                }
+            });
+            resizeObserver.observe(container);
+
+            function animate() {
+                requestAnimationFrame(animate);
+                if (!isDragging) {
+                    group.rotation.y += 0.005;
+                }
+                renderer.render(scene, camera);
+            }
+            animate();
+        }
+
+        // --- INITIALIZATION ON LOAD ---
+        window.onload = function () {
+            renderLatihan();
+            nav('beranda');
+        };
+
+    </script>
+</body>
+
+</html>
